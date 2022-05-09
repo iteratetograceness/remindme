@@ -1,5 +1,12 @@
 const { App } = require('@slack/bolt');
 
+const database = {};
+
+const databaseProxy = {
+    set: async (key, data) => database[key] = data,
+    get: async (key) => database[key]
+};
+
 require('dotenv').config();
 
 const PORT = 5000;
@@ -11,12 +18,37 @@ const app = new App({
   clientSecret: process.env.SLACK_CLIENT_SECRET,
   stateSecret: 'remind-me-secret',
   scopes: ['chat:write'],
+  port: PORT,
   installationStore: {
       storeInstallation: async (installation) => {
-          console.log(installation)
+        console.log(installation)
+        if (installation.isEnterpriseInstall && installation.enterprise !== undefined) { 
+            return await databaseProxy.set(installation.enterprise.id, installation);
+        }
+        if (installation.team !== undefined) { 
+            return await databaseProxy.set(installation.team.id, installation);
+        }
+        throw new Error('Failed saving installation data to installationStore');
+      },
+      fetchInstallation: async () => {
+        if (installQuery.isEnterpriseInstall && installQuery.enterpriseId !== undefined) {
+            return await databaseProxy.get(installQuery.enterpriseId);
+        }
+        if (installQuery.teamId !== undefined) {
+            return await databaseProxy.get(installQuery.teamId);
+        }
+        throw new Error('Failed fetching installation');
+      },
+      deleteInstallation: async () => {
+        if (installQuery.isEnterpriseInstall && installQuery.enterpriseId !== undefined) {
+            return await database.delete(installQuery.enterpriseId);
+        }
+        if (installQuery.teamId !== undefined) {
+            return await database.delete(installQuery.teamId);
+        }
+        throw new Error('Failed to delete installation');
       }
-  },
-  port: PORT,
+  }
 });
 
 const startApp = async () => {
