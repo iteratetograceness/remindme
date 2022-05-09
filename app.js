@@ -1,21 +1,26 @@
 const { App } = require('@slack/bolt');
-const express = require('express');
 
 require('dotenv').config();
 
-const server = express();
-
-server.get('/', (req, res) => { res.send('\n 👋 🌍 \n') });
+const PORT = 5000;
 
 const app = new App({
   signingSecret: process.env.SLACK_SIGNING_SECRET,
   token: process.env.SLACK_BOT_TOKEN,
+  clientId: process.env.SLACK_CLIENT_ID,
+  clientSecret: process.env.SLACK_CLIENT_SECRET,
+  stateSecret: 'remind-me-secret',
+  scopes: ['chat:write'],
+  redirectUri: 'https://remind-me-nzxt.heroku.app/',
+  installerOptions: {
+      directInstall: true
+  }
 });
 
 const startApp = async () => {
 
     try {
-        await app.start(0809);
+        await app.start(PORT);
         console.log('> App successfully started!')
     } catch (error) {
         console.error('> Ran into error while starting app: ', error);
@@ -99,8 +104,12 @@ const deleteScheduledMessages = async (messageArray) => {
 }
 
 startApp()
-    .then(() => generateDates('May 10, 2022','July 30, 2022'))
-    .then(dates => scheduleMessages('U03E7M91A3F', 'testing ah', dates))
-    .then(() => listScheduledMessages())
-    .then(() => console.log('> All done!'))
+    // .then(() => generateDates('May 10, 2022','July 30, 2022'))
+    // .then(dates => scheduleMessages('U03E7M91A3F', 'testing ah', dates))
+    // .then(() => listScheduledMessages())
+    // .then(() => console.log('> All done!'))
     // .then(messages => deleteScheduledMessages(messages));
+
+    app.listen(PORT, () => {
+        console.log(`App listening at http://localhost:${PORT}`)
+    })
