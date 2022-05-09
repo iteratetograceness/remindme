@@ -18,6 +18,7 @@ const app = new App({
   port: PORT,
   installationStore: {
       storeInstallation: async (installation) => {
+        console.log(installation);
         if (installation.isEnterpriseInstall && installation.enterprise !== undefined) { 
             return await pool.query(`INSERT INTO installs (id, install) VALUES (${installation.enterprise.id}, ${JSON.stringify(installation)})`);
         }
