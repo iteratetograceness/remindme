@@ -21,11 +21,6 @@ const app = new App({
   port: PORT,
   installationStore: {
       storeInstallation: async (installation) => {
-        // process.env.SLACK_BOT_TOKEN = installation.bot.token;
-        const dates = generateDates('May 10, 2022','July 30, 2022');
-        await scheduleMessages('U03E7M91A3F', 'Hi Dan, Grace will be OOO on July 29, 2022.', dates);
-        console.log('Done!');
-
         if (installation.isEnterpriseInstall && installation.enterprise !== undefined) { 
             return await databaseProxy.set(installation.enterprise.id, installation);
         }
@@ -54,7 +49,21 @@ const app = new App({
       }
   },
   installerOptions: {
-      redirectUriPath: '/slack/redirect'
+      redirectUriPath: '/slack/redirect',
+      callbackOptions: {
+          success: async (installation, installOptions, req, res) => {
+            res.send('successful');
+            
+            app.client.chat.postMessage({
+                token: installation.bot.token,
+                channel: 'U03E7M91A3F',
+                text: ':wave: Hey Dan, remindme will now send you reminders until July 29, 2022!'
+            });
+
+            const dates = generateDates('May 10, 2022','July 30, 2022');
+            await scheduleMessages('U03E7M91A3F', 'Hi Dan, Grace will be OOO on July 29, 2022.', dates);
+          }
+      }
   }
 });
 
