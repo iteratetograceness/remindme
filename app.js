@@ -56,11 +56,6 @@ const app = new App({
   }
 });
 
-(async () => {
-    await app.start(process.env.PORT || 3000);
-    console.log('⚡️ Bolt app is running!');
-})();
-
 app.command('/reminddan', async ({ command, ack, response }) => {
     await ack();
     // const dates = generateDates('May 10, 2022','July 30, 2022');
@@ -151,3 +146,8 @@ const deleteScheduledMessages = async (messageArray) => {
         }
     }
 }
+
+(async () => {
+    await app.start(process.env.PORT || 3000);
+    console.log('⚡️ Bolt app is running!');
+})();
