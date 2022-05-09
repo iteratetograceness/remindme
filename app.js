@@ -1,6 +1,11 @@
 const { App } = require('@slack/bolt');
+const express = require('express');
 
 require('dotenv').config();
+
+const server = express();
+
+server.get('/', (req, res) => { res.send('\n 👋 🌍 \n') });
 
 const app = new App({
   signingSecret: process.env.SLACK_SIGNING_SECRET,
