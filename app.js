@@ -18,7 +18,6 @@ const app = new App({
   port: PORT,
   installationStore: {
       storeInstallation: async (installation) => {
-        console.log(installation);
         if (installation.isEnterpriseInstall && installation.enterprise !== undefined) { 
             return await pool.query(`INSERT INTO installationstore (id, install) VALUES ('${installation.enterprise.id}', '${JSON.stringify(installation)}')`);
         }
@@ -27,7 +26,7 @@ const app = new App({
         }
         throw new Error('Failed saving installation data to installationStore');
       },
-      fetchInstallation: async () => {
+      fetchInstallation: async (installQuery) => {
         if (installQuery.isEnterpriseInstall && installQuery.enterpriseId !== undefined) {
             const response =  await pool.query(`SELECT install FROM installationstore WHERE id=${installQuery.enterpriseId})`);
             console.log(response);
@@ -35,12 +34,12 @@ const app = new App({
         }
         if (installQuery.teamId !== undefined) {
             const response = await pool.query(`SELECT install FROM installationstore WHERE id=${installQuery.teamId})`);
-            console.log(response);
+            console.log('fetch installation', response);
             return response.json();
         }
         throw new Error('Failed fetching installation');
       },
-      deleteInstallation: async () => {
+      deleteInstallation: async (installQuery) => {
         if (installQuery.isEnterpriseInstall && installQuery.enterpriseId !== undefined) {
             return await pool.query(`DELETE FROM installationstore WHERE id=${installQuery.enterpriseId})`);
         }
