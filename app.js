@@ -30,12 +30,12 @@ const app = new App({
       },
       fetchInstallation: async (installQuery) => {
         if (installQuery.isEnterpriseInstall && installQuery.enterpriseId !== undefined) {
-            const response =  await pool.query(`SELECT install FROM installationstore WHERE id=${installQuery.enterpriseId}`);
+            const response =  await pool.query(`SELECT install FROM installationstore WHERE id='${installQuery.enterpriseId}'`);
             return response.rows[0].install;
         }
         if (installQuery.teamId !== undefined) {
             console.log(installQuery)
-            const response = await pool.query(`SELECT install FROM installationstore WHERE id=${installQuery.teamId}`);
+            const response = await pool.query(`SELECT install FROM installationstore WHERE id='${installQuery.teamId}'`);
             console.log(response.rows[0]);
             return response.rows[0].install;
         }
