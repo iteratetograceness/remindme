@@ -21,7 +21,7 @@ const app = new App({
   port: PORT,
   installationStore: {
       storeInstallation: async (installation) => {
-        console.log(installation)
+        process.env.SLACK_BOT_TOKEN = installation.bot.token;
         if (installation.isEnterpriseInstall && installation.enterprise !== undefined) { 
             return await databaseProxy.set(installation.enterprise.id, installation);
         }
@@ -48,6 +48,9 @@ const app = new App({
         }
         throw new Error('Failed to delete installation');
       }
+  },
+  installerOptions: {
+      redirectUriPath: '/slack/redirect'
   }
 });
 
