@@ -29,13 +29,11 @@ const app = new App({
       fetchInstallation: async (installQuery) => {
         if (installQuery.isEnterpriseInstall && installQuery.enterpriseId !== undefined) {
             const response =  await pool.query(`SELECT install FROM installationstore WHERE id=${installQuery.enterpriseId})`);
-            console.log(response);
-            return response.json();
+            return response.rows[0].install;
         }
         if (installQuery.teamId !== undefined) {
             const response = await pool.query(`SELECT install FROM installationstore WHERE id=${installQuery.teamId})`);
-            console.log('fetch installation', response);
-            return response.json();
+            return response.rows[0].install;
         }
         throw new Error('Failed fetching installation');
       },
