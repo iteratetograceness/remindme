@@ -56,20 +56,20 @@ const app = new App({
   }
 });
 
-app.command('/reminddan', async ({ command, ack, response }) => {
+app.command('/reminddan', async ({ command, ack, respond }) => {
     await ack();
     // const dates = generateDates('May 10, 2022','July 30, 2022');
     //await scheduleMessages('U03E7M91A3F', 'Hi Dan, Grace will be OOO on July 29, 2022.', dates);
     const dates = generateDates('May 9, 2022','May 10, 2022');
     await scheduleMessages('U03EKNARR8V', 'Hi Dan, Grace will be OOO on July 29, 2022.', dates);
-    await response('Messages scheduled.');
+    await respond('Messages scheduled.');
 });
 
-app.command('/cancel', async ({ command, ack, response }) => {
+app.command('/cancel', async ({ command, ack, respond }) => {
     await ack();
     const messages = await listScheduledMessages();
     await deleteScheduledMessages(messages);
-    await response('Messages unscheduled.');
+    await respond('Messages unscheduled.');
 });
 
 /**
@@ -82,12 +82,12 @@ const generateDates = (start, end) => {
     const date = new Date(start);
     let dateString = '';
     const endDate = new Date(end);
-    endDate.setHours(15, 30, 0);
+    endDate.setHours(17, 15, 0);
     const endDateString = endDate.toUTCString();
 
     while (dateString !== endDateString) {
         date.setDate(date.getDate() + 1); // increment the day
-        date.setHours(15, 30, 0); // set hours to be 9am
+        date.setHours(17, 15, 0); // set hours to be 9am
         dateString = date.toUTCString();
         dates.push(new Date(date).getTime() / 1000);
     }
