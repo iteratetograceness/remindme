@@ -18,6 +18,7 @@
   "homepage": "https://github.com/jueungrace/dan-bot#readme",
   "dependencies": {
     "@slack/bolt": "^3.11.0",
-    "dotenv": "^16.0.0"
+    "dotenv": "^16.0.0",
+    "nodemon": "^2.0.16"
   }
 }

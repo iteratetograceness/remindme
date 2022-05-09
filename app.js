@@ -6,7 +6,7 @@ const PORT = 5000;
 
 const app = new App({
   signingSecret: process.env.SLACK_SIGNING_SECRET,
-  token: process.env.SLACK_BOT_TOKEN,
+//   token: process.env.SLACK_BOT_TOKEN,
   clientId: process.env.SLACK_CLIENT_ID,
   clientSecret: process.env.SLACK_CLIENT_SECRET,
   stateSecret: 'remind-me-secret',
@@ -16,42 +16,8 @@ const app = new App({
           console.log(installation)
       }
   },
+  port: PORT,
 });
-
-app.event('app_home_opened', async ({ event, client, logger }) => {
-    try {
-      // Call views.publish with the built-in client
-      const result = await client.views.publish({
-        // Use the user ID associated with the event
-        user_id: event.user,
-        view: {
-          // Home tabs must be enabled in your app configuration page under "App Home"
-          "type": "home",
-          "blocks": [
-            {
-              "type": "section",
-              "text": {
-                "type": "mrkdwn",
-                "text": "*Welcome home, <@" + event.user + "> :house:*"
-              }
-            },
-            {
-              "type": "section",
-              "text": {
-                "type": "mrkdwn",
-                "text": "Learn how home tabs can be more useful and interactive <https://api.slack.com/surfaces/tabs/using|*in the documentation*>."
-              }
-            }
-          ]
-        }
-      });
-  
-      logger.info(result);
-    }
-    catch (error) {
-      logger.error(error);
-    }
-  });
 
 const startApp = async () => {
 
@@ -145,7 +111,3 @@ startApp()
     // .then(() => listScheduledMessages())
     // .then(() => console.log('> All done!'))
     // .then(messages => deleteScheduledMessages(messages));
-
-    app.listen(PORT, () => {
-        console.log(`App listening at http://localhost:${PORT}`)
-    })
