@@ -20,12 +20,12 @@ const app = new App({
       storeInstallation: async (installation) => {
         console.log(installation);
         if (installation.isEnterpriseInstall && installation.enterprise !== undefined) { 
-            const response = await pool.query(`INSERT INTO installs (id, install) VALUES (${installation.enterprise.id}, ${JSON.stringify(installation)})`);
+            const response = await pool.query(`INSERT INTO installationstore (id, install) VALUES (${installation.enterprise.id}, ${JSON.parse(installation)})`);
             console.log('> Store installation done.');
             return response;
         }
         if (installation.team !== undefined) { 
-            const response = await pool.query(`INSERT INTO installs (id, install) VALUES (${installation.team.id}, ${JSON.stringify(installation)})`);
+            const response = await pool.query(`INSERT INTO installationstore (id, install) VALUES (${installation.team.id}, ${JSON.stringify(installation)})`);
             console.log('> Store installation done.');
             return response;
         }
@@ -33,21 +33,21 @@ const app = new App({
       },
       fetchInstallation: async () => {
         if (installQuery.isEnterpriseInstall && installQuery.enterpriseId !== undefined) {
-            const response =  await pool.query(`SELECT install FROM installs WHERE id=${installQuery.enterpriseId})`);
+            const response =  await pool.query(`SELECT install FROM installationstore WHERE id=${installQuery.enterpriseId})`);
             return response.json();
         }
         if (installQuery.teamId !== undefined) {
-            const response = await pool.query(`SELECT install FROM installs WHERE id=${installQuery.teamId})`);
+            const response = await pool.query(`SELECT install FROM installationstore WHERE id=${installQuery.teamId})`);
             return response.json();
         }
         throw new Error('Failed fetching installation');
       },
       deleteInstallation: async () => {
         if (installQuery.isEnterpriseInstall && installQuery.enterpriseId !== undefined) {
-            return await pool.query(`DELETE FROM installs WHERE id=${installQuery.enterpriseId})`);
+            return await pool.query(`DELETE FROM installationstore WHERE id=${installQuery.enterpriseId})`);
         }
         if (installQuery.teamId !== undefined) {
-            return await pool.query(`DELETE FROM installs WHERE id=${installQuery.teamId})`);
+            return await pool.query(`DELETE FROM installationstore WHERE id=${installQuery.teamId})`);
         }
         throw new Error('Failed to delete installation');
       }
