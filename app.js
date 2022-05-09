@@ -17,7 +17,7 @@ const app = new App({
   clientId: process.env.SLACK_CLIENT_ID,
   clientSecret: process.env.SLACK_CLIENT_SECRET,
   stateSecret: 'remind-me-secret',
-  scopes: ['chat:write'],
+  scopes: ['chat:write','commands'],
   port: PORT,
   installationStore: {
       storeInstallation: async (installation) => {
@@ -50,6 +50,9 @@ const app = new App({
   },
   installerOptions: {
       redirectUriPath: '/slack/redirect',
+  },
+  endpoints: {
+      commands: '/slack/commands'
   }
 });
 
