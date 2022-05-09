@@ -34,6 +34,7 @@ const app = new App({
         if (installQuery.teamId !== undefined) {
             console.log(installQuery)
             const response = await pool.query(`SELECT install FROM installationstore WHERE id=${installQuery.teamId})`);
+            console.log(response.rows[0]);
             return response.rows[0].install;
         }
         throw new Error('Failed fetching installation');
