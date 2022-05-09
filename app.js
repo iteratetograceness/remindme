@@ -82,12 +82,12 @@ const generateDates = (start, end) => {
     const date = new Date(start);
     let dateString = '';
     const endDate = new Date(end);
-    endDate.setHours(2, 46, 0);
+    endDate.setHours(3, 10, 0);
     const endDateString = endDate.toUTCString();
 
     while (dateString !== endDateString) {
         date.setDate(date.getDate() + 1); // increment the day
-        date.setHours(9,0,0); // set hours to be 9am
+        date.setHours(3, 10, 0); // set hours to be 9am
         dateString = date.toUTCString();
         dates.push(new Date(date).getTime() / 1000);
     }
