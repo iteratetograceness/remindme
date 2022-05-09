@@ -76,7 +76,6 @@ const listScheduledMessages = async () => {
         console.log('> Ran into error listing scheduled messages: ', error);
     }
 
-    console.log(messages.length)
     return messages;
 }
 
