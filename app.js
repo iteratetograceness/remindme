@@ -50,33 +50,25 @@ const app = new App({
   },
   installerOptions: {
       redirectUriPath: '/slack/redirect',
-      callbackOptions: {
-          success: async (installation, installOptions, req, res) => {
-            res.send('successful');
-
-            app.client.chat.postMessage({
-                token: installation.bot.token,
-                channel: 'U03E7M91A3F',
-                text: ':wave: Hey Dan, remindme will now send you reminders until July 29, 2022!'
-            });
-
-            // const dates = generateDates('May 10, 2022','July 30, 2022');
-            // await scheduleMessages('U03E7M91A3F', 'Hi Dan, Grace will be OOO on July 29, 2022.', dates);
-          }
-      }
   }
 });
 
-const startApp = async () => {
+(async () => {
+    await app.start(process.env.PORT || 3000);
+    console.log('⚡️ Bolt app is running!');
+})();
 
-    try {
-        await app.start(process.env.PORT || PORT);
-        console.log('> App successfully started!')
-    } catch (error) {
-        console.error('> Ran into error while starting app: ', error);
-    }
+app.message('remind dan', async ({ message, client, logger }) => {
+    // const dates = generateDates('May 10, 2022','July 30, 2022');
+    //await scheduleMessages('U03E7M91A3F', 'Hi Dan, Grace will be OOO on July 29, 2022.', dates);
+    const dates = generateDates('May 9, 2022','May 10, 2022');
+    await scheduleMessages('U03EKNARR8V', 'Hi Dan, Grace will be OOO on July 29, 2022.', dates);
+});
 
-}
+app.message('cancel', async ({ message, client, logger }) => {
+    const messages = await listScheduledMessages();
+    await deleteScheduledMessages(messages);
+});
 
 /**
  * Generates array of UTC format dates from today to `lastDay`
@@ -88,7 +80,7 @@ const generateDates = (start, end) => {
     const date = new Date(start);
     let dateString = '';
     const endDate = new Date(end);
-    endDate.setHours(9,0,0);
+    endDate.setHours(2, 44, 0);
     const endDateString = endDate.toUTCString();
 
     while (dateString !== endDateString) {
@@ -154,8 +146,3 @@ const deleteScheduledMessages = async (messageArray) => {
 }
 
 startApp()
-    // .then(() => generateDates('May 10, 2022','July 30, 2022'))
-    // .then(dates => scheduleMessages('U03E7M91A3F', 'Hi Dan, Grace will be OOO on July 29, 2022.', dates))
-    // .then(() => listScheduledMessages())
-    // .then(() => console.log('> All done!'))
-    // .then(messages => deleteScheduledMessages(messages));
