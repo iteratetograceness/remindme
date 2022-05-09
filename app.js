@@ -22,7 +22,7 @@ const app = new App({
 const startApp = async () => {
 
     try {
-        await app.start(PORT);
+        await app.start(process.env.PORT || PORT);
         console.log('> App successfully started!')
     } catch (error) {
         console.error('> Ran into error while starting app: ', error);
