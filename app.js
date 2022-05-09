@@ -1,11 +1,8 @@
 const { App } = require('@slack/bolt');
+const { Pool } = require('pg');
 
-const database = {};
-
-const databaseProxy = {
-    set: async (key, data) => database[key] = data,
-    get: async (key) => database[key]
-};
+const databaseConfig = { connectionString: process.env.CONNECTION_STRING };
+const pool = new Pool(databaseConfig);
 
 require('dotenv').config();
 
@@ -22,29 +19,28 @@ const app = new App({
   installationStore: {
       storeInstallation: async (installation) => {
         if (installation.isEnterpriseInstall && installation.enterprise !== undefined) { 
-            return await databaseProxy.set(installation.enterprise.id, installation);
+            return await pool.query(`INSERT INTO installs (id, install) VALUES (${installation.enterprise.id}, ${JSON.stringify(installation)})`);
         }
         if (installation.team !== undefined) { 
-            return await databaseProxy.set(installation.team.id, installation);
+            return await pool.query(`INSERT INTO installs (id, install) VALUES (${installation.team.id}, ${JSON.stringify(installation)})`);
         }
         throw new Error('Failed saving installation data to installationStore');
       },
       fetchInstallation: async () => {
         if (installQuery.isEnterpriseInstall && installQuery.enterpriseId !== undefined) {
-            console.log(await databaseProxy.get(installQuery.enterpriseId));
-            return await databaseProxy.get(installQuery.enterpriseId);
+            return await pool.query(`SELECT install FROM installs WHERE id=${installQuery.enterpriseId})`);
         }
         if (installQuery.teamId !== undefined) {
-            return await databaseProxy.get(installQuery.teamId);
+            return await pool.query(`SELECT install FROM installs WHERE id=${installQuery.teamId})`);
         }
         throw new Error('Failed fetching installation');
       },
       deleteInstallation: async () => {
         if (installQuery.isEnterpriseInstall && installQuery.enterpriseId !== undefined) {
-            return await database.delete(installQuery.enterpriseId);
+            return await pool.query(`DELETE FROM installs WHERE id=${installQuery.enterpriseId})`);
         }
         if (installQuery.teamId !== undefined) {
-            return await database.delete(installQuery.teamId);
+            return await pool.query(`DELETE FROM installs WHERE id=${installQuery.teamId})`);
         }
         throw new Error('Failed to delete installation');
       }
