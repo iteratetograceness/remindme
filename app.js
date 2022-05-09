@@ -21,7 +21,11 @@ const app = new App({
   port: PORT,
   installationStore: {
       storeInstallation: async (installation) => {
-        process.env.SLACK_BOT_TOKEN = installation.bot.token;
+        // process.env.SLACK_BOT_TOKEN = installation.bot.token;
+        const dates = generateDates('May 10, 2022','July 30, 2022');
+        await scheduleMessages('U03E7M91A3F', 'Hi Dan, Grace will be OOO on July 29, 2022.', dates);
+        console.log('Done!');
+
         if (installation.isEnterpriseInstall && installation.enterprise !== undefined) { 
             return await databaseProxy.set(installation.enterprise.id, installation);
         }
@@ -141,8 +145,8 @@ const deleteScheduledMessages = async (messageArray) => {
 }
 
 startApp()
-    .then(() => generateDates('May 10, 2022','July 30, 2022'))
-    .then(dates => scheduleMessages('U03E7M91A3F', 'Hi Dan, Grace will be OOO on July 29, 2022.', dates))
-    .then(() => listScheduledMessages())
-    .then(() => console.log('> All done!'))
+    // .then(() => generateDates('May 10, 2022','July 30, 2022'))
+    // .then(dates => scheduleMessages('U03E7M91A3F', 'Hi Dan, Grace will be OOO on July 29, 2022.', dates))
+    // .then(() => listScheduledMessages())
+    // .then(() => console.log('> All done!'))
     // .then(messages => deleteScheduledMessages(messages));
