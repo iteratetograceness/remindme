@@ -50,9 +50,6 @@ const app = new App({
   },
   installerOptions: {
       redirectUriPath: '/slack/redirect',
-  },
-  endpoints: {
-      commands: '/slack/commands'
   }
 });
 
