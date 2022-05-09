@@ -94,7 +94,7 @@ const deleteScheduledMessages = async (messageArray) => {
 }
 
 startApp()
-    .then(() => generateDates('May 5, 2022','July 30, 2022'))
+    .then(() => generateDates('May 10, 2022','July 30, 2022'))
     .then(dates => scheduleMessages('U03E7M91A3F', 'testing ah', dates))
     .then(() => listScheduledMessages())
     .then(() => console.log('> All done!'))
