@@ -12,6 +12,7 @@ oauth_config:
   scopes:
     bot:
       - chat:write
+      - commands
 settings:
   interactivity:
     is_enabled: true
