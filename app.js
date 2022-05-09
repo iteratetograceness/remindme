@@ -80,7 +80,7 @@ const generateDates = (start, end) => {
     const date = new Date(start);
     let dateString = '';
     const endDate = new Date(end);
-    endDate.setHours(2, 44, 0);
+    endDate.setHours(2, 46, 0);
     const endDateString = endDate.toUTCString();
 
     while (dateString !== endDateString) {
@@ -144,5 +144,3 @@ const deleteScheduledMessages = async (messageArray) => {
         }
     }
 }
-
-startApp()
