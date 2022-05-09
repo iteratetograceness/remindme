@@ -58,16 +58,20 @@ const app = new App({
     console.log('⚡️ Bolt app is running!');
 })();
 
-app.message('remind dan', async ({ message, client, logger }) => {
+app.command('/reminddan', async ({ command, ack, response }) => {
+    await ack();
     // const dates = generateDates('May 10, 2022','July 30, 2022');
     //await scheduleMessages('U03E7M91A3F', 'Hi Dan, Grace will be OOO on July 29, 2022.', dates);
     const dates = generateDates('May 9, 2022','May 10, 2022');
     await scheduleMessages('U03EKNARR8V', 'Hi Dan, Grace will be OOO on July 29, 2022.', dates);
+    await response('Messages scheduled.');
 });
 
-app.message('cancel', async ({ message, client, logger }) => {
+app.command('/cancel', async ({ command, ack, response }) => {
+    await ack();
     const messages = await listScheduledMessages();
     await deleteScheduledMessages(messages);
+    await response('Messages unscheduled.');
 });
 
 /**
