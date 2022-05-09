@@ -20,7 +20,7 @@ const app = new App({
       storeInstallation: async (installation) => {
         console.log(installation);
         if (installation.isEnterpriseInstall && installation.enterprise !== undefined) { 
-            const response = await pool.query(`INSERT INTO installationstore (id, install) VALUES (${installation.enterprise.id}, ${JSON.parse(installation)})`);
+            const response = await pool.query(`INSERT INTO installationstore (id, install) VALUES (${installation.enterprise.id}, ${JSON.stringify(installation)})`);
             console.log('> Store installation done.');
             return response;
         }
