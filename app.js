@@ -20,16 +20,17 @@ const app = new App({
       storeInstallation: async (installation) => {
         console.log(installation);
         if (installation.isEnterpriseInstall && installation.enterprise !== undefined) { 
-            return await pool.query(`INSERT INTO installationstore (id, install) VALUES (${installation.enterprise.id}, ${JSON.stringify(installation)})`);
+            return await pool.query(`INSERT INTO installationstore (id, install) VALUES ('${installation.enterprise.id}', '${JSON.stringify(installation)}')`);
         }
         if (installation.team !== undefined) { 
-            return await pool.query(`INSERT INTO installationstore (id, install) VALUES (${installation.team.id}, ${JSON.stringify(installation)})`);
+            return await pool.query(`INSERT INTO installationstore (id, install) VALUES ('${installation.team.id}', '${JSON.stringify(installation)}')`);
         }
         throw new Error('Failed saving installation data to installationStore');
       },
       fetchInstallation: async () => {
         if (installQuery.isEnterpriseInstall && installQuery.enterpriseId !== undefined) {
             const response =  await pool.query(`SELECT install FROM installationstore WHERE id=${installQuery.enterpriseId})`);
+            console.log(response);
             return response.json();
         }
         if (installQuery.teamId !== undefined) {
