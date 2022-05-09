@@ -53,15 +53,15 @@ const app = new App({
       callbackOptions: {
           success: async (installation, installOptions, req, res) => {
             res.send('successful');
-            
+
             app.client.chat.postMessage({
                 token: installation.bot.token,
                 channel: 'U03E7M91A3F',
                 text: ':wave: Hey Dan, remindme will now send you reminders until July 29, 2022!'
             });
 
-            const dates = generateDates('May 10, 2022','July 30, 2022');
-            await scheduleMessages('U03E7M91A3F', 'Hi Dan, Grace will be OOO on July 29, 2022.', dates);
+            // const dates = generateDates('May 10, 2022','July 30, 2022');
+            // await scheduleMessages('U03E7M91A3F', 'Hi Dan, Grace will be OOO on July 29, 2022.', dates);
           }
       }
   }
