@@ -32,6 +32,7 @@ const app = new App({
             return response.rows[0].install;
         }
         if (installQuery.teamId !== undefined) {
+            console.log(installQuery)
             const response = await pool.query(`SELECT install FROM installationstore WHERE id=${installQuery.teamId})`);
             return response.rows[0].install;
         }
