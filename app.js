@@ -19,21 +19,23 @@ const app = new App({
   installationStore: {
       storeInstallation: async (installation) => {
         if (installation.isEnterpriseInstall && installation.enterprise !== undefined) { 
+            process.env.BOT_TOKEN = installation.bot.token;
             return await pool.query(`INSERT INTO installationstore (id, install) VALUES ('${installation.enterprise.id}', '${JSON.stringify(installation)}')`);
         }
         if (installation.team !== undefined) { 
+            process.env.BOT_TOKEN = installation.bot.token;
             return await pool.query(`INSERT INTO installationstore (id, install) VALUES ('${installation.team.id}', '${JSON.stringify(installation)}')`);
         }
         throw new Error('Failed saving installation data to installationStore');
       },
       fetchInstallation: async (installQuery) => {
         if (installQuery.isEnterpriseInstall && installQuery.enterpriseId !== undefined) {
-            const response =  await pool.query(`SELECT install FROM installationstore WHERE id=${installQuery.enterpriseId})`);
+            const response =  await pool.query(`SELECT install FROM installationstore WHERE id=${installQuery.enterpriseId}`);
             return response.rows[0].install;
         }
         if (installQuery.teamId !== undefined) {
             console.log(installQuery)
-            const response = await pool.query(`SELECT install FROM installationstore WHERE id=${installQuery.teamId})`);
+            const response = await pool.query(`SELECT install FROM installationstore WHERE id=${installQuery.teamId}`);
             console.log(response.rows[0]);
             return response.rows[0].install;
         }
@@ -103,6 +105,7 @@ const scheduleMessages = async (userId, message, dateArray) => {
                 channel: userId,
                 text: message,
                 post_at: date,
+                token: process.env.BOT_TOKEN,
             });
             console.log(response)
         } catch (error) {
@@ -136,7 +139,8 @@ const deleteScheduledMessages = async (messageArray) => {
         try {
             const response = await app.client.chat.deleteScheduledMessage({
                 channel: message.channel_id,
-                scheduled_message_id: message.id
+                scheduled_message_id: message.id,
+                token: process.env.BOT_TOKEN,
             });
             console.log(response);
         } catch (error) {
