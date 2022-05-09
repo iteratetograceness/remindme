@@ -31,6 +31,7 @@ const app = new App({
       },
       fetchInstallation: async () => {
         if (installQuery.isEnterpriseInstall && installQuery.enterpriseId !== undefined) {
+            console.log(await databaseProxy.get(installQuery.enterpriseId));
             return await databaseProxy.get(installQuery.enterpriseId);
         }
         if (installQuery.teamId !== undefined) {
