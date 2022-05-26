@@ -1,8 +1,12 @@
 const { App } = require('@slack/bolt');
+const NodeCache = require( "node-cache" );
+const { v4: uuid } = require('uuid');
 
 require('dotenv').config();
 
 const PORT = 5000;
+
+const scheduledMessages = new NodeCache();
 
 const app = new App({
   signingSecret: process.env.SLACK_SIGNING_SECRET,
@@ -54,13 +58,13 @@ const app = new App({
  * Schedule message to send to certain channel or user from start to end dates
  */
 app.command('/reminders', async ({ payload, body, say, respond, ack }) => {
-    console.log(payload, body, say);
+    console.log(payload);
     await ack();
     // const dates = generateDates('May 10, 2022','July 30, 2022');
-    //await scheduleMessages('U03E7M91A3F', 'Hi Dan, Grace will be OOO on July 29, 2022.', dates);
-    const dates = generateDates('May 10, 2022','July 30, 2022');
-    await scheduleMessages('U016QLLRG78', 'Hi Dan, Grace will be OOO on July 29, 2022.', dates);
-    await respond('Niiiiiiiiiiice, messages scheduled.');
+    // const messageIds = await scheduleMessages('U016QLLRG78', 'Hi Dan, Grace will be OOO on July 29, 2022.', dates);
+    const referenceId = uuid();
+    // scheduleMessages.set(referenceId, messageIds, 10000); 
+    await say(`Niiiiiiiiiiice, messages scheduled. Here is your reference ID: ${referenceId}. You'll need it if you ever want to edit or cancel your scheduled messages.`);
 });
 
 app.command('/cancel', async ({ command, ack, respond }) => {
@@ -75,7 +79,6 @@ app.command('/cancel', async ({ command, ack, respond }) => {
  * @param {string} lastDay - Date String
  */
 const generateDates = (start, end) => {
-
     const dates = []
     const date = new Date(start);
     let dateString = '';
@@ -91,13 +94,11 @@ const generateDates = (start, end) => {
     }
     
     return dates;
-
 }
 
 const scheduleMessages = async (userId, message, dateArray) => {
-
+    const messageIds = []
     for (let date of dateArray) {
-
         try {
             const response = await app.client.chat.scheduleMessage({
                 channel: userId,
@@ -105,19 +106,15 @@ const scheduleMessages = async (userId, message, dateArray) => {
                 post_at: date,
                 token: process.env.BOT_TOKEN,
             });
-            console.log(response)
+            messageIds.push(response.scheduled_message_id)
         } catch (error) {
             console.error('> Ran into error scheduling message for ', date, JSON.stringify(error));
         }
-        
     };
-
-    return;
-
+    return messageIds;
 }
 
 const listScheduledMessages = async () => {
-
     const messages = [];
 
     try {
