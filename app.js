@@ -73,7 +73,7 @@ const app = new App({
  * Schedule message to send to certain channel or user from start to end dates
  * Parameters: [@userid/#channel] [start: mm/dd/yyyy] [end: mm/dd/yyyy] [time: hh:mm(am/pm)] [message]
  */
-app.command('/reminders', async ({ payload, body, say, respond, ack }) => {
+app.command('/reminders', async ({ payload, context, respond, ack }) => {
     await ack();
 
     const { text } = payload;
@@ -98,7 +98,7 @@ app.command('/reminders', async ({ payload, body, say, respond, ack }) => {
     const dates = generateDates(start, end, hours, mins);
 
     // Schedule messages and save reference in cache
-    const messageIds = await scheduleMessages(sanitizedId, message, dates);
+    const messageIds = await scheduleMessages(sanitizedId, message, dates, context.botToken);
     const referenceId = uuid();
     const TTL = ((new Date(end) + 1) - new Date()) / 1000;
     cache.set(referenceId, messageIds, TTL); 
@@ -140,7 +140,7 @@ const generateDates = (start, end, hours, minutes) => {
     return dates;
 }
 
-const scheduleMessages = async (userId, message, dateArray) => {
+const scheduleMessages = async (userId, message, dateArray, token) => {
     const messageIds = []
     for (let date of dateArray) {
         try {
@@ -148,6 +148,7 @@ const scheduleMessages = async (userId, message, dateArray) => {
                 channel: userId,
                 text: message,
                 post_at: date,
+                token
             });
             messageIds.push(response.scheduled_message_id)
         } catch (error) {
