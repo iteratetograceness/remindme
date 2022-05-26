@@ -1,4 +1,4 @@
-const { App } = require('@slack/bolt');
+const { App, LogLevel } = require('@slack/bolt');
 const NodeCache = require( "node-cache" );
 const { v4: uuid } = require('uuid');
 
