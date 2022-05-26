@@ -13,16 +13,25 @@ const app = new App({
   port: PORT,
   installationStore: {
       storeInstallation: async (installation) => {
-        process.env.SLACK_BOT_TOKEN = installation.bot.token;
-        process.env.SLACK_INSTALLATION = JSON.stringify(installation);
-        return
+        if (installation.isEnterpriseInstall && installation.enterprise !== undefined) { 
+            // process.env.SLACK_BOT_TOKEN = installation.bot.token;
+            process.env[installation.enterprise.id] =  JSON.stringify(installation)
+        }
+        if (installation.team !== undefined) { 
+            // process.env.SLACK_BOT_TOKEN = installation.bot.token;
+            process.env[installation.team.id] =  JSON.stringify(installation)
+        }
+        throw new Error('Failed saving installation data to installationStore');
       },
       fetchInstallation: async (installQuery) => {
-        return process.env.SLACK_INSTALLATION
+        if (installQuery.isEnterpriseInstall && installQuery.enterpriseId !== undefined) return JSON.parse(process.env[installQuery.enterpriseId]).install;
+        if (installQuery.teamId !== undefined) return JSON.parse(process.env[installQuery.teamId]).install;
+        throw new Error('Failed fetching installation');
       },
       deleteInstallation: async (installQuery) => {
-        process.env.SLACK_INSTALLATION = null
-        return
+        if (installQuery.isEnterpriseInstall && installQuery.enterpriseId !== undefined) process.env[installQuery.enterpriseId] = null
+        if (installQuery.teamId !== undefined) process.env[installQuery.teamId] = null
+        throw new Error('Failed to delete installation');
       }
   },
   installerOptions: {
