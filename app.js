@@ -58,10 +58,10 @@ const app = new App({
       },
       fetchInstallation: async (installQuery) => {
         if (installQuery.isEnterpriseInstall && installQuery.enterpriseId !== undefined) {
-            return JSON.parse(cache.get(installQuery.enterpriseId)) || process.env[installQuery.enterpriseId];
+            return JSON.parse(cache.get(installQuery.enterpriseId)) || JSON.parse(process.env[installQuery.enterpriseId]);
         }
         if (installQuery.teamId !== undefined) {
-            return JSON.parse(cache.get(installQuery.teamId)) || process.env[installQuery.teamId];
+            return JSON.parse(cache.get(installQuery.teamId)) || JSON.parse(process.env[installQuery.teamId]);
         }
         throw new Error('Failed fetching installation');
       },
