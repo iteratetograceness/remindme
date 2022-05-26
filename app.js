@@ -130,8 +130,7 @@ app.command('/cancel', async ({ payload, context, ack, respond }) => {
     await ack();
     const { text } = payload;
     const messageIds = cache.get(text.trim())
-    console.log(messageIds)
-    // await deleteScheduledMessages(messages);
+    await deleteScheduledMessages(messageIds, context.botToken);
     await respond('Messages unscheduled.');
 });
 
@@ -157,17 +156,17 @@ const generateDates = (start, end, hours, minutes) => {
     return dates;
 }
 
-const scheduleMessages = async (userId, message, dateArray, token) => {
+const scheduleMessages = async (id, message, dateArray, token) => {
     const messageIds = []
     for (let date of dateArray) {
         try {
             const response = await app.client.chat.scheduleMessage({
-                channel: userId,
+                channel: id,
                 text: message,
                 post_at: date,
                 token
             });
-            messageIds.push(response.scheduled_message_id)
+            messageIds.push([response.scheduled_message_id, id])
         } catch (error) {
             console.error('> Ran into error scheduling message for', date, JSON.stringify(error));
         }
@@ -175,15 +174,14 @@ const scheduleMessages = async (userId, message, dateArray, token) => {
     return messageIds;
 }
 
-const deleteScheduledMessages = async (messageArray) => {
+const deleteScheduledMessages = async (messageArray, token) => {
     for (let message of messageArray) {
         try {
             const response = await app.client.chat.deleteScheduledMessage({
-                channel: message.channel_id,
-                scheduled_message_id: message.id,
-                token: process.env.BOT_TOKEN,
+                channel: message[1],
+                scheduled_message_id: message[0],
+                token,
             });
-            console.log(response);
         } catch (error) {
             console.log('> Ran into error while canceling message ID', message.id, error);
         }
