@@ -97,11 +97,12 @@ const app = new App({
  * Schedule message to send to certain channel or user from start to end dates
  * Parameters: [@userid/#channel] [start: mm/dd/yyyy] [end: mm/dd/yyyy] [time: hh:mm(am/pm)] [message]
  */
-app.command("/schedule", async ({ ack, body, logger }) => {
+app.command("/schedule", async ({ ack, body, context, logger }) => {
 	await ack();
 
 	try {
 		const result = await app.client.views.open({
+			token: context.botToken,
 			trigger_id: body,
 			view: {
 				type: "modal",
