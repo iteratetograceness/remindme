@@ -15,13 +15,14 @@ const app = new App({
   stateSecret: 'remind-me-secret',
   scopes: ['chat:write','commands','chat:write.public'],
   port: PORT,
+  logLevel: LogLevel.DEBUG,
   customRoutes: [
     {
       path: '/',
       method: ['GET'],
       handler: (_, res) => {
         res.writeHead(200);
-        res.end('Homepage');
+        res.end('heyyyyyy werld');
       },
     },
   ],
@@ -41,7 +42,7 @@ const app = new App({
       },
       fetchInstallation: async (installQuery) => {
         if (installQuery.isEnterpriseInstall && installQuery.enterpriseId !== undefined) {
-            return cache.get(installQuery.enterpriseId);
+            return JSON.parse(cache.get(installQuery.enterpriseId));
             //  || process.env[installQuery.enterpriseId];
         }
         if (installQuery.teamId !== undefined) {
