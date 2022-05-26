@@ -25,6 +25,7 @@ const app = new App({
       },
       fetchInstallation: async (installQuery) => {
         if (installQuery.isEnterpriseInstall && installQuery.enterpriseId !== undefined) return JSON.parse(process.env[installQuery.enterpriseId]).install;
+        console.log((process.env[installQuery.teamId]))
         if (installQuery.teamId !== undefined) return JSON.parse(process.env[installQuery.teamId]).install;
         throw new Error('Failed fetching installation');
       },
