@@ -28,12 +28,12 @@ const app = new App({
   installationStore: {
       storeInstallation: async (installation) => {
         if (installation.isEnterpriseInstall && installation.enterprise !== undefined) { 
-            cache.set(installation.enterprise.id, installation)
+            cache.set(installation.enterprise.id, JSON.stringify(installation))
             process.env[installation.enterprise.id] =  JSON.stringify(installation)
             return
         }
         if (installation.team !== undefined) { 
-            cache.set(installation.team.id, installation)
+            cache.set(installation.team.id, JSON.stringify(installation))
             process.env[installation.team.id] =  JSON.stringify(installation)
             return
         }
@@ -41,12 +41,12 @@ const app = new App({
       },
       fetchInstallation: async (installQuery) => {
         if (installQuery.isEnterpriseInstall && installQuery.enterpriseId !== undefined) {
-            return JSON.parse(cache.get(installQuery.enterpriseId)) || JSON.parse(process.env[installQuery.enterpriseId]);
+            return cache.get(installQuery.enterpriseId) || process.env[installQuery.enterpriseId];
         }
         if (installQuery.teamId !== undefined) {
             console.log('>>> fetch from cache: ', cache.get(installQuery.teamId))
             console.log('>>> fetch from env: ', process.env[installQuery.teamId])
-            return JSON.parse(cache.get(installQuery.teamId)) || JSON.parse(process.env[installQuery.teamId]);
+            return cache.get(installQuery.teamId) || process.env[installQuery.teamId];
         }
         throw new Error('Failed fetching installation');
       },
