@@ -164,6 +164,7 @@ const scheduleMessages = async (id, message, dateArray, token) => {
                 post_at: date,
                 token
             });
+            console.log('scheduled messaged:', response, id, message, date);
             messageIds.push([response.scheduled_message_id, id])
         } catch (error) {
             console.error('> Ran into error scheduling message for', date, JSON.stringify(error));
