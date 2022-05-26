@@ -1,8 +1,4 @@
 const { App } = require('@slack/bolt');
-const { Pool } = require('pg');
-
-const databaseConfig = { connectionString: process.env.CONNECTION_STRING };
-const pool = new Pool(databaseConfig);
 
 require('dotenv').config();
 
@@ -10,7 +6,6 @@ const PORT = 5000;
 
 const app = new App({
   signingSecret: process.env.SLACK_SIGNING_SECRET,
-//   token: process.env.SLACK_BOT_TOKEN,
   clientId: process.env.SLACK_CLIENT_ID,
   clientSecret: process.env.SLACK_CLIENT_SECRET,
   stateSecret: 'remind-me-secret',
@@ -18,37 +13,16 @@ const app = new App({
   port: PORT,
   installationStore: {
       storeInstallation: async (installation) => {
-        if (installation.isEnterpriseInstall && installation.enterprise !== undefined) { 
-            process.env.BOT_TOKEN = installation.bot.token;
-            return await pool.query(`INSERT INTO installationstore (id, install) VALUES ('${installation.enterprise.id}', '${JSON.stringify(installation)}')`);
-        }
-        if (installation.team !== undefined) { 
-            process.env.BOT_TOKEN = installation.bot.token;
-            return await pool.query(`INSERT INTO installationstore (id, install) VALUES ('${installation.team.id}', '${JSON.stringify(installation)}')`);
-        }
-        throw new Error('Failed saving installation data to installationStore');
+        process.env.SLACK_BOT_TOKEN = installation.bot.token;
+        process.env.SLACK_INSTALLATION = JSON.stringify(installation);
+        return
       },
       fetchInstallation: async (installQuery) => {
-        if (installQuery.isEnterpriseInstall && installQuery.enterpriseId !== undefined) {
-            const response =  await pool.query(`SELECT install FROM installationstore WHERE id='${installQuery.enterpriseId}'`);
-            return response.rows[0].install;
-        }
-        if (installQuery.teamId !== undefined) {
-            console.log(installQuery)
-            const response = await pool.query(`SELECT install FROM installationstore WHERE id='${installQuery.teamId}'`);
-            console.log(response.rows[0]);
-            return response.rows[0].install;
-        }
-        throw new Error('Failed fetching installation');
+        return process.env.SLACK_INSTALLATION
       },
       deleteInstallation: async (installQuery) => {
-        if (installQuery.isEnterpriseInstall && installQuery.enterpriseId !== undefined) {
-            return await pool.query(`DELETE FROM installationstore WHERE id=${installQuery.enterpriseId})`);
-        }
-        if (installQuery.teamId !== undefined) {
-            return await pool.query(`DELETE FROM installationstore WHERE id=${installQuery.teamId})`);
-        }
-        throw new Error('Failed to delete installation');
+        process.env.SLACK_INSTALLATION = null
+        return
       }
   },
   installerOptions: {
