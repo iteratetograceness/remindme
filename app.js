@@ -38,9 +38,9 @@ const app = new App({
         throw new Error('Failed saving installation data to installationStore');
       },
       fetchInstallation: async (installQuery) => {
-        if (installQuery.isEnterpriseInstall && installQuery.enterpriseId !== undefined) return JSON.parse(process.env[installQuery.enterpriseId]);
+        if (installQuery.isEnterpriseInstall && installQuery.enterpriseId !== undefined) return process.env[installQuery.enterpriseId];
         console.log((process.env[installQuery.teamId]))
-        if (installQuery.teamId !== undefined) return JSON.parse(process.env[installQuery.teamId]);
+        if (installQuery.teamId !== undefined) return process.env[installQuery.teamId];
         throw new Error('Failed fetching installation');
       },
       deleteInstallation: async (installQuery) => {
