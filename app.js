@@ -64,7 +64,8 @@ app.command('/reminders', async ({ payload, body, say, respond, ack }) => {
     // const messageIds = await scheduleMessages('U016QLLRG78', 'Hi Dan, Grace will be OOO on July 29, 2022.', dates);
     const referenceId = uuid();
     // scheduleMessages.set(referenceId, messageIds, 10000); 
-    await say(`Niiiiiiiiiiice, messages scheduled. Here is your reference ID: ${referenceId}. You'll need it if you ever want to edit or cancel your scheduled messages.`);
+    const res = await say(`Niiiiiiiiiiice, messages scheduled. Here is your reference ID: ${referenceId}. You'll need it if you ever want to edit or cancel your scheduled messages.`);
+    console.log(JSON.stringify(res))
 });
 
 app.command('/cancel', async ({ command, ack, respond }) => {
