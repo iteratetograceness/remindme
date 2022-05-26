@@ -2,7 +2,6 @@ const { App, LogLevel } = require("@slack/bolt");
 const NodeCache = require("node-cache");
 const { DateTime } = require("luxon");
 const { v4: uuid } = require("uuid");
-var memwatch = require("@airbnb/node-memwatch");
 
 require("dotenv").config();
 
