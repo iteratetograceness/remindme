@@ -41,10 +41,11 @@ const app = new App({
       },
       fetchInstallation: async (installQuery) => {
         if (installQuery.isEnterpriseInstall && installQuery.enterpriseId !== undefined) {
-            console.log(cache.get(installQuery.enterpriseId))
             return JSON.parse(cache.get(installQuery.enterpriseId)) || JSON.parse(process.env[installQuery.enterpriseId]);
         }
         if (installQuery.teamId !== undefined) {
+            console.log('>>> fetch from cache: ', cache.get(installQuery.teamId))
+            console.log('>>> fetch from env: ', process.env[installQuery.teamId])
             return JSON.parse(cache.get(installQuery.teamId)) || JSON.parse(process.env[installQuery.teamId]);
         }
         throw new Error('Failed fetching installation');
