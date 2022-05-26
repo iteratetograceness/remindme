@@ -110,6 +110,8 @@ app.command('/reminders', async ({ payload, context, respond, ack }) => {
     // Generate dates
     const dates = generateDates(start, end, hours, mins);
 
+    console.log(dates);
+
     // Schedule messages and save reference in cache
     const messageIds = await scheduleMessages(sanitizedId, message, dates, context.botToken);
     const referenceId = uuid();
@@ -137,11 +139,11 @@ app.command('/cancel', async ({ payload, context, ack, respond }) => {
  * @param {string} lastDay - Date String
  */
 const generateDates = (start, end, hours, minutes) => {
-    const dates = []
+    const dates = [];
     const date = new Date(start);
 
     const firstDate = date.setHours(hours, minutes, 0)
-    dates.push(new Date(firstDate).getTime() / 1000)
+    dates.push(Math.floor(new Date(firstDate).getTime() / 1000))
 
     let dateString = '';
     const endDate = new Date(end);
@@ -152,7 +154,7 @@ const generateDates = (start, end, hours, minutes) => {
         date.setDate(date.getDate() + 1);
         date.setHours(hours, minutes, 0); 
         dateString = date.toUTCString();
-        dates.push(new Date(date).getTime() / 1000);
+        dates.push(Math.floor(new Date(date).getTime() / 1000));
     }
     
     return dates;
