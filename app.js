@@ -56,14 +56,21 @@ const app = new App({
 
 /**
  * Schedule message to send to certain channel or user from start to end dates
- * Parameters: [@userid/#channel] [start: mm/dd/yyyy] [end: mm/dd/yyyy] [time: hh:mm (am/pm)] [message]
+ * Parameters: [@userid/#channel] [start: mm/dd/yyyy] [end: mm/dd/yyyy] [time: hh:mm(am/pm)] [message]
  */
 app.command('/reminders', async ({ payload, body, say, respond, ack }) => {
     await ack();
     const { text } = payload;
     // <@U03HVQ0BJKA|graceyumm> 1/1/11 2/2/22 9am fhjasldfjasdklf
     // <@U03HVQ0BJKA|graceyumm> 1/1/11 2/2/22 9:30am fhjasldfjasdklf
-    const [ id, start, end, time, message ] = text.split(' ');
+    const splitArr = text.split(' ');
+    const id = splitArr[0];
+    const start = splitArr[1];
+    const end = splitArr[2];
+    const time = splitArr[3]
+    const message = splitArr.slice(4);
+
+    console.log(id, time, message);
 
     // Get user or channel id
     const sanitizedId = id.split('|')[0].match(/[a-zA-Z0-9]+/g).toString();
