@@ -126,11 +126,11 @@ app.command('/reminders', async ({ payload, context, respond, ack }) => {
  * Cancel scheduled messages
  * Parameters: referenceId
  */
-app.command('/cancel', async ({ payload, ack, respond }) => {
+app.command('/cancel', async ({ payload, context, ack, respond }) => {
     await ack();
     const { text } = payload;
-    const messages = await listScheduledMessages(text.trim());
-    console.log(messages)
+    const messageIds = cache.get(text.trim())
+    console.log(messageIds)
     // await deleteScheduledMessages(messages);
     await respond('Messages unscheduled.');
 });
@@ -173,21 +173,6 @@ const scheduleMessages = async (userId, message, dateArray, token) => {
         }
     };
     return messageIds;
-}
-
-const listScheduledMessages = async () => {
-    const messages = [];
-
-    try {
-        const response = await app.client.chat.scheduledMessages.list();
-        for (let message of response.scheduled_messages) {
-            messages.push(message)
-        }
-    } catch (error) {
-        console.log('> Ran into error listing scheduled messages: ', error);
-    }
-
-    return messages;
 }
 
 const deleteScheduledMessages = async (messageArray) => {
