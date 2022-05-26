@@ -16,10 +16,12 @@ const app = new App({
         if (installation.isEnterpriseInstall && installation.enterprise !== undefined) { 
             // process.env.SLACK_BOT_TOKEN = installation.bot.token;
             process.env[installation.enterprise.id] =  JSON.stringify(installation)
+            return
         }
         if (installation.team !== undefined) { 
             // process.env.SLACK_BOT_TOKEN = installation.bot.token;
             process.env[installation.team.id] =  JSON.stringify(installation)
+            return
         }
         throw new Error('Failed saving installation data to installationStore');
       },
