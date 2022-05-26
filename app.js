@@ -13,7 +13,7 @@ const app = new App({
   clientId: process.env.SLACK_CLIENT_ID,
   clientSecret: process.env.SLACK_CLIENT_SECRET,
   stateSecret: 'remind-me-secret',
-  scopes: ['chat:write','commands'],
+  scopes: ['chat:write','commands','chat:write.public'],
   port: PORT,
   customRoutes: [
     {
@@ -38,9 +38,8 @@ const app = new App({
         throw new Error('Failed saving installation data to installationStore');
       },
       fetchInstallation: async (installQuery) => {
-        if (installQuery.isEnterpriseInstall && installQuery.enterpriseId !== undefined) return process.env[installQuery.enterpriseId];
-        console.log((process.env[installQuery.teamId]))
-        if (installQuery.teamId !== undefined) return process.env[installQuery.teamId];
+        if (installQuery.isEnterpriseInstall && installQuery.enterpriseId !== undefined) return JSON.parse(process.env[installQuery.enterpriseId]);
+        if (installQuery.teamId !== undefined) return JSON.parse(process.env[installQuery.teamId]);
         throw new Error('Failed fetching installation');
       },
       deleteInstallation: async (installQuery) => {
@@ -70,10 +69,9 @@ app.command('/reminders', async ({ payload, body, say, respond, ack }) => {
     const time = splitArr[3]
     const message = splitArr.slice(4);
 
-    console.log(id, time, message);
-
     // Get user or channel id
     const sanitizedId = id.split('|')[0].match(/[a-zA-Z0-9]+/g).toString();
+    console.log(sanitizedId, message);
 
     // Get hours and minutes
     const splitTime = time.split(':')
