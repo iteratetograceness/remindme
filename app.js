@@ -6,7 +6,7 @@ require('dotenv').config();
 
 const PORT = 5000;
 
-const scheduledMessages = new NodeCache();
+const cache = new NodeCache();
 
 const app = new App({
   signingSecret: process.env.SLACK_SIGNING_SECRET,
@@ -28,23 +28,37 @@ const app = new App({
   installationStore: {
       storeInstallation: async (installation) => {
         if (installation.isEnterpriseInstall && installation.enterprise !== undefined) { 
+            cache.set(installation.enterprise.id, installation)
             process.env[installation.enterprise.id] =  JSON.stringify(installation)
             return
         }
         if (installation.team !== undefined) { 
+            cache.set(installation.team.id, installation)
             process.env[installation.team.id] =  JSON.stringify(installation)
             return
         }
         throw new Error('Failed saving installation data to installationStore');
       },
       fetchInstallation: async (installQuery) => {
-        if (installQuery.isEnterpriseInstall && installQuery.enterpriseId !== undefined) return JSON.parse(process.env[installQuery.enterpriseId]);
-        if (installQuery.teamId !== undefined) return JSON.parse(process.env[installQuery.teamId]);
+        if (installQuery.isEnterpriseInstall && installQuery.enterpriseId !== undefined) {
+            console.log(cache.get(installQuery.enterpriseId))
+            return JSON.parse(cache.get(installQuery.enterpriseId)) || JSON.parse(process.env[installQuery.enterpriseId]);
+        }
+        if (installQuery.teamId !== undefined) {
+            return JSON.parse(cache.get(installQuery.teamId)) || JSON.parse(process.env[installQuery.teamId]);
+        }
         throw new Error('Failed fetching installation');
       },
       deleteInstallation: async (installQuery) => {
-        if (installQuery.isEnterpriseInstall && installQuery.enterpriseId !== undefined) process.env[installQuery.enterpriseId] = null
-        if (installQuery.teamId !== undefined) process.env[installQuery.teamId] = null
+        if (installQuery.isEnterpriseInstall && installQuery.enterpriseId !== undefined) {
+            process.env[installQuery.enterpriseId] = null
+            cache.del(installQuery.enterpriseId)
+            return
+        }
+        if (installQuery.teamId !== undefined) {
+            process.env[installQuery.teamId] = null
+            cache.del(installQuery.teamId)
+        }
         throw new Error('Failed to delete installation');
       }
   },
@@ -59,9 +73,8 @@ const app = new App({
  */
 app.command('/reminders', async ({ payload, body, say, respond, ack }) => {
     await ack();
+
     const { text } = payload;
-    // <@U03HVQ0BJKA|graceyumm> 1/1/11 2/2/22 9am fhjasldfjasdklf
-    // <@U03HVQ0BJKA|graceyumm> 1/1/11 2/2/22 9:30am fhjasldfjasdklf
     const splitArr = text.split(' ');
     const id = splitArr[0];
     const start = splitArr[1];
