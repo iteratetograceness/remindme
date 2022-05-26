@@ -44,8 +44,6 @@ const app = new App({
             return cache.get(installQuery.enterpriseId) || process.env[installQuery.enterpriseId];
         }
         if (installQuery.teamId !== undefined) {
-            console.log('>>> fetch from cache: ', cache.get(installQuery.teamId))
-            console.log('>>> fetch from env: ', process.env[installQuery.teamId])
             return cache.get(installQuery.teamId) || process.env[installQuery.teamId];
         }
         throw new Error('Failed fetching installation');
@@ -81,7 +79,7 @@ app.command('/reminders', async ({ payload, body, say, respond, ack }) => {
     const start = splitArr[1];
     const end = splitArr[2];
     const time = splitArr[3]
-    const message = splitArr.slice(4);
+    const message = splitArr.slice(4).join(' ');
 
     // Get user or channel id
     const sanitizedId = id.split('|')[0].match(/[a-zA-Z0-9]+/g).toString();
@@ -100,7 +98,7 @@ app.command('/reminders', async ({ payload, body, say, respond, ack }) => {
     const messageIds = await scheduleMessages(sanitizedId, message, dates);
     const referenceId = uuid();
     const TTL = ((new Date(end) + 1) - new Date()) / 1000;
-    scheduledMessages.set(referenceId, messageIds, TTL); 
+    cache.set(referenceId, messageIds, TTL); 
 
     // Respond with reference id
     await respond(`Niiiiiiiiiiice, successfully scheduled your message. This is your reference ID: ${referenceId}. You'll need it if you ever want to edit or cancel your scheduled messages.`);
@@ -147,11 +145,10 @@ const scheduleMessages = async (userId, message, dateArray) => {
                 channel: userId,
                 text: message,
                 post_at: date,
-                token: process.env.BOT_TOKEN,
             });
             messageIds.push(response.scheduled_message_id)
         } catch (error) {
-            console.error('> Ran into error scheduling message for ', date, JSON.stringify(error));
+            console.error('> Ran into error scheduling message for', date, JSON.stringify(error));
         }
     };
     return messageIds;
