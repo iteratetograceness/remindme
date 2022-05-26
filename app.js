@@ -139,16 +139,20 @@ app.command('/cancel', async ({ payload, context, ack, respond }) => {
 const generateDates = (start, end, hours, minutes) => {
     const dates = []
     const date = new Date(start);
+
+    const firstDate = date.setHours(hours, minutes, 0)
+    dates.push(new Date(firstDate).getTime() / 1000)
+
     let dateString = '';
     const endDate = new Date(end);
     endDate.setHours(hours, minutes, 0);
     const endDateString = endDate.toUTCString();
 
     while (dateString !== endDateString) {
+        date.setDate(date.getDate() + 1);
         date.setHours(hours, minutes, 0); 
         dateString = date.toUTCString();
         dates.push(new Date(date).getTime() / 1000);
-        date.setDate(date.getDate() + 1); 
     }
     
     return dates;
@@ -164,17 +168,16 @@ const scheduleMessages = async (id, message, dateArray, token) => {
                 post_at: date,
                 token
             });
+            console.log('> Scheduled messaged: ', date, response)
             messageIds.push([response.scheduled_message_id, id])
         } catch (error) {
             console.error('> Ran into error scheduling message for', date, JSON.stringify(error));
         }
     };
-    console.log(messageIds);
     return messageIds;
 }
 
 const deleteScheduledMessages = async (messageArray, token) => {
-    console.log(messageArray);
     for (let message of messageArray) {
         try {
             await app.client.chat.deleteScheduledMessage({
