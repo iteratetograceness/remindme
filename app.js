@@ -8,88 +8,111 @@ const PORT = 5000;
 
 const scheduledMessages = new NodeCache();
 
-const app = new App({
-  signingSecret: process.env.SLACK_SIGNING_SECRET,
-  clientId: process.env.SLACK_CLIENT_ID,
-  clientSecret: process.env.SLACK_CLIENT_SECRET,
-  stateSecret: 'remind-me-secret',
-  scopes: ['chat:write','commands'],
-  port: PORT,
-  customRoutes: [
-    {
-      path: '/',
-      method: ['GET'],
-      handler: (_, res) => {
-        res.writeHead(200);
-        res.end('Homepage');
-      },
-    },
-  ],
-  installationStore: {
-      storeInstallation: async (installation) => {
-        if (installation.isEnterpriseInstall && installation.enterprise !== undefined) { 
-            process.env[installation.enterprise.id] =  JSON.stringify(installation)
-            return
-        }
-        if (installation.team !== undefined) { 
-            process.env[installation.team.id] =  JSON.stringify(installation)
-            return
-        }
-        throw new Error('Failed saving installation data to installationStore');
-      },
-      fetchInstallation: async (installQuery) => {
-        if (installQuery.isEnterpriseInstall && installQuery.enterpriseId !== undefined) return process.env[installQuery.enterpriseId];
-        console.log((process.env[installQuery.teamId]))
-        if (installQuery.teamId !== undefined) return process.env[installQuery.teamId];
-        throw new Error('Failed fetching installation');
-      },
-      deleteInstallation: async (installQuery) => {
-        if (installQuery.isEnterpriseInstall && installQuery.enterpriseId !== undefined) process.env[installQuery.enterpriseId] = null
-        if (installQuery.teamId !== undefined) process.env[installQuery.teamId] = null
-        throw new Error('Failed to delete installation');
-      }
-  },
-  installerOptions: {
-      redirectUriPath: '/slack/redirect',
-  }
-});
+// const app = new App({
+//   signingSecret: process.env.SLACK_SIGNING_SECRET,
+//   clientId: process.env.SLACK_CLIENT_ID,
+//   clientSecret: process.env.SLACK_CLIENT_SECRET,
+//   stateSecret: 'remind-me-secret',
+//   scopes: ['chat:write','commands'],
+//   port: PORT,
+//   customRoutes: [
+//     {
+//       path: '/',
+//       method: ['GET'],
+//       handler: (_, res) => {
+//         res.writeHead(200);
+//         res.end('Homepage');
+//       },
+//     },
+//   ],
+//   installationStore: {
+//       storeInstallation: async (installation) => {
+//         if (installation.isEnterpriseInstall && installation.enterprise !== undefined) { 
+//             process.env[installation.enterprise.id] =  JSON.stringify(installation)
+//             return
+//         }
+//         if (installation.team !== undefined) { 
+//             process.env[installation.team.id] =  JSON.stringify(installation)
+//             return
+//         }
+//         throw new Error('Failed saving installation data to installationStore');
+//       },
+//       fetchInstallation: async (installQuery) => {
+//         if (installQuery.isEnterpriseInstall && installQuery.enterpriseId !== undefined) return process.env[installQuery.enterpriseId];
+//         console.log((process.env[installQuery.teamId]))
+//         if (installQuery.teamId !== undefined) return process.env[installQuery.teamId];
+//         throw new Error('Failed fetching installation');
+//       },
+//       deleteInstallation: async (installQuery) => {
+//         if (installQuery.isEnterpriseInstall && installQuery.enterpriseId !== undefined) process.env[installQuery.enterpriseId] = null
+//         if (installQuery.teamId !== undefined) process.env[installQuery.teamId] = null
+//         throw new Error('Failed to delete installation');
+//       }
+//   },
+//   installerOptions: {
+//       redirectUriPath: '/slack/redirect',
+//   }
+// });
 
 /**
  * Schedule message to send to certain channel or user from start to end dates
+ * Parameters: [@userid/#channel] [start: mm/dd/yyyy] [end: mm/dd/yyyy] [time: hh:mm (am/pm)] [message]
  */
 app.command('/reminders', async ({ payload, body, say, respond, ack }) => {
-    console.log(payload);
     await ack();
-    // const dates = generateDates('May 10, 2022','July 30, 2022');
-    // const messageIds = await scheduleMessages('U016QLLRG78', 'Hi Dan, Grace will be OOO on July 29, 2022.', dates);
+    const { text } = payload;
+    // <@U03HVQ0BJKA|graceyumm> 1/1/11 2/2/22 9am fhjasldfjasdklf
+    // <@U03HVQ0BJKA|graceyumm> 1/1/11 2/2/22 9:30am fhjasldfjasdklf
+    const [ id, start, end, time, message ] = text.split(' ');
+
+    // Get user or channel id
+    const sanitizedId = id.split('|')[0].match(/[a-zA-Z0-9]+/g).toString();
+
+    // Get hours and minutes
+    const splitTime = time.split(':')
+    const amOrPm = splitTime[splitTime.length-1].match(/[a-zA-Z]+/g)[0].toLowerCase();
+    const hours = (splitTime.length === 2 ? Number(splitTime[0]) : Number(splitTime[0].match(/\d+/g))) + (amOrPm === 'pm' ? 12 : 0);
+    const mins = splitTime.length === 2 ? Number(splitTime[1].match(/\d+/g)) : 0;
+
+    // Generate dates
+    const dates = generateDates(start, end, hours, mins);
+
+    // Schedule messages and save reference in cache
+    const messageIds = await scheduleMessages(sanitizedId, message, dates);
     const referenceId = uuid();
-    // scheduleMessages.set(referenceId, messageIds, 10000); 
-    await respond(`Niiiiiiiiiiice, messages scheduled. Here is your reference ID: ${referenceId}. You'll need it if you ever want to edit or cancel your scheduled messages.`);
-    console.log(JSON.stringify(res))
+    const TTL = ((new Date(end) + 1) - new Date()) / 1000;
+    scheduleMessages.set(referenceId, messageIds, TTL); 
+
+    // Respond with reference id
+    await respond(`Niiiiiiiiiiice, successfully scheduled your message. This is your reference ID: ${referenceId}. You'll need it if you ever want to edit or cancel your scheduled messages.`);
 });
 
-app.command('/cancel', async ({ command, ack, respond }) => {
-    await ack();
-    const messages = await listScheduledMessages();
-    await deleteScheduledMessages(messages);
-    await respond('Messages unscheduled.');
-});
+/**
+ * Cancel scheduled messages
+ * Parameters: referenceId
+ */
+// app.command('/cancel', async ({ command, ack, respond }) => {
+//     await ack();
+//     const messages = await listScheduledMessages();
+//     await deleteScheduledMessages(messages);
+//     await respond('Messages unscheduled.');
+// });
 
 /**
  * Generates array of UTC format dates from today to `lastDay`
  * @param {string} lastDay - Date String
  */
-const generateDates = (start, end) => {
+const generateDates = (start, end, hours, minutes) => {
     const dates = []
     const date = new Date(start);
     let dateString = '';
     const endDate = new Date(end);
-    endDate.setHours(9, 0, 0);
+    endDate.setHours(hours, minutes, 0);
     const endDateString = endDate.toUTCString();
 
     while (dateString !== endDateString) {
-        date.setDate(date.getDate() + 1); // increment the day
-        date.setHours(9, 0, 0); // set hours to be 9am
+        date.setDate(date.getDate() + 1); 
+        date.setHours(hours, minutes, 0); 
         dateString = date.toUTCString();
         dates.push(new Date(date).getTime() / 1000);
     }
