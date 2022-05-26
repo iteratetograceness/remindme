@@ -191,7 +191,7 @@ app.command("/schedule", async ({ ack, body, context, logger }) => {
 						type: "input",
 						element: {
 							type: "datepicker",
-							initial_date: "2022-04-28",
+							initial_date: DateTime.now(),
 							placeholder: {
 								type: "plain_text",
 								text: "Select a start date",
@@ -209,7 +209,7 @@ app.command("/schedule", async ({ ack, body, context, logger }) => {
 						type: "input",
 						element: {
 							type: "datepicker",
-							initial_date: "2022-05-27",
+							initial_date: DateTime.now(),
 							placeholder: {
 								type: "plain_text",
 								text: "Select an end date",
@@ -226,7 +226,7 @@ app.command("/schedule", async ({ ack, body, context, logger }) => {
 				],
 			},
 		});
-		logger.info(result);
+		logger.info(">> result: ", result);
 	} catch (error) {
 		logger.error(error);
 	}
@@ -275,7 +275,7 @@ app.command("/schedule", async ({ ack, body, context, logger }) => {
 
 app.view("schedule", async ({ ack, body, view, client, logger }) => {
 	await ack();
-	console.log(view);
+	logger.inner(">> view obj: ", view);
 });
 
 /**
