@@ -124,16 +124,6 @@ app.command("/schedule", async ({ ack, body, context, logger }) => {
 				},
 				blocks: [
 					{
-						type: "context",
-						elements: [
-							{
-								type: "plain_text",
-								text: "Author: K A Applegate",
-								emoji: true,
-							},
-						],
-					},
-					{
 						type: "input",
 						element: {
 							type: "plain_text_input",
@@ -191,7 +181,7 @@ app.command("/schedule", async ({ ack, body, context, logger }) => {
 						type: "input",
 						element: {
 							type: "datepicker",
-							initial_date: DateTime.now(),
+							initial_date: DateTime.now().toLocaleString(),
 							placeholder: {
 								type: "plain_text",
 								text: "Select a start date",
@@ -209,7 +199,7 @@ app.command("/schedule", async ({ ack, body, context, logger }) => {
 						type: "input",
 						element: {
 							type: "datepicker",
-							initial_date: DateTime.now(),
+							initial_date: DateTime.now().toLocaleString(),
 							placeholder: {
 								type: "plain_text",
 								text: "Select an end date",
