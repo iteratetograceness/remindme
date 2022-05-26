@@ -11,18 +11,24 @@ const app = new App({
   stateSecret: 'remind-me-secret',
   scopes: ['chat:write','commands'],
   port: PORT,
+  customRoutes: [
+    {
+      path: '/',
+      method: ['GET'],
+      handler: (_, res) => {
+        res.writeHead(200);
+        res.end('Homepage');
+      },
+    },
+  ],
   installationStore: {
       storeInstallation: async (installation) => {
         if (installation.isEnterpriseInstall && installation.enterprise !== undefined) { 
-            // process.env.SLACK_BOT_TOKEN = installation.bot.token;
             process.env[installation.enterprise.id] =  JSON.stringify(installation)
-            console.log(process.env[installation.enterprise.id])
             return
         }
         if (installation.team !== undefined) { 
-            // process.env.SLACK_BOT_TOKEN = installation.bot.token;
             process.env[installation.team.id] =  JSON.stringify(installation)
-            console.log(process.env[installation.team.id])
             return
         }
         throw new Error('Failed saving installation data to installationStore');
@@ -44,13 +50,17 @@ const app = new App({
   }
 });
 
-app.command('/reminddan', async ({ command, ack, respond }) => {
+/**
+ * Schedule message to send to certain channel or user from start to end dates
+ */
+app.command('/reminders', async ({ payload, body, say, respond, ack }) => {
+    console.log(payload, body, say);
     await ack();
     // const dates = generateDates('May 10, 2022','July 30, 2022');
     //await scheduleMessages('U03E7M91A3F', 'Hi Dan, Grace will be OOO on July 29, 2022.', dates);
     const dates = generateDates('May 10, 2022','July 30, 2022');
     await scheduleMessages('U016QLLRG78', 'Hi Dan, Grace will be OOO on July 29, 2022.', dates);
-    await respond('Messages scheduled.');
+    await respond('Niiiiiiiiiiice, messages scheduled.');
 });
 
 app.command('/cancel', async ({ command, ack, respond }) => {
