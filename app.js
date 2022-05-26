@@ -169,10 +169,12 @@ const scheduleMessages = async (id, message, dateArray, token) => {
             console.error('> Ran into error scheduling message for', date, JSON.stringify(error));
         }
     };
+    console.log(messageIds);
     return messageIds;
 }
 
 const deleteScheduledMessages = async (messageArray, token) => {
+    console.log(messageArray);
     for (let message of messageArray) {
         try {
             await app.client.chat.deleteScheduledMessage({
