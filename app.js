@@ -22,9 +22,25 @@ const app = new App({
       method: ['GET'],
       handler: (_, res) => {
         res.writeHead(200);
-        res.end('heyyyyyy werld');
+        res.end('Welcome to the homepage of the remindme Slack bot.');
       },
     },
+    {
+        path: '/support',
+        method: ['GET'],
+        handler: (_, res) => {
+          res.writeHead(200);
+          res.end('For support, please email graceyunn@gmail.com.');
+        },
+      },
+      {
+        path: '/privacy',
+        method: ['GET'],
+        handler: (_, res) => {
+          res.writeHead(200);
+          res.end(`This bot requests the following scopes: 'chat:write','commands','chat:write.public'.`);
+        },
+      },
   ],
   installationStore: {
       storeInstallation: async (installation) => {
@@ -112,8 +128,8 @@ app.command('/reminders', async ({ payload, context, respond, ack }) => {
  */
 app.command('/cancel', async ({ payload, ack, respond }) => {
     await ack();
-    const { id } = payload;
-    const messages = await listScheduledMessages(id.trim());
+    const { text } = payload;
+    const messages = await listScheduledMessages(text.trim());
     console.log(messages)
     // await deleteScheduledMessages(messages);
     await respond('Messages unscheduled.');
