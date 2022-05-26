@@ -29,22 +29,24 @@ const app = new App({
       storeInstallation: async (installation) => {
         if (installation.isEnterpriseInstall && installation.enterprise !== undefined) { 
             cache.set(installation.enterprise.id, JSON.stringify(installation))
-            process.env[installation.enterprise.id] =  JSON.stringify(installation)
+            // process.env[installation.enterprise.id] =  JSON.stringify(installation)
             return
         }
         if (installation.team !== undefined) { 
             cache.set(installation.team.id, JSON.stringify(installation))
-            process.env[installation.team.id] =  JSON.stringify(installation)
+            // process.env[installation.team.id] =  JSON.stringify(installation)
             return
         }
         throw new Error('Failed saving installation data to installationStore');
       },
       fetchInstallation: async (installQuery) => {
         if (installQuery.isEnterpriseInstall && installQuery.enterpriseId !== undefined) {
-            return cache.get(installQuery.enterpriseId) || process.env[installQuery.enterpriseId];
+            return cache.get(installQuery.enterpriseId);
+            //  || process.env[installQuery.enterpriseId];
         }
         if (installQuery.teamId !== undefined) {
-            return cache.get(installQuery.teamId) || process.env[installQuery.teamId];
+            return JSON.parse(cache.get(installQuery.teamId));
+            //  || process.env[installQuery.teamId];
         }
         throw new Error('Failed fetching installation');
       },
