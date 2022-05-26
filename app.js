@@ -8,51 +8,51 @@ const PORT = 5000;
 
 const scheduledMessages = new NodeCache();
 
-// const app = new App({
-//   signingSecret: process.env.SLACK_SIGNING_SECRET,
-//   clientId: process.env.SLACK_CLIENT_ID,
-//   clientSecret: process.env.SLACK_CLIENT_SECRET,
-//   stateSecret: 'remind-me-secret',
-//   scopes: ['chat:write','commands'],
-//   port: PORT,
-//   customRoutes: [
-//     {
-//       path: '/',
-//       method: ['GET'],
-//       handler: (_, res) => {
-//         res.writeHead(200);
-//         res.end('Homepage');
-//       },
-//     },
-//   ],
-//   installationStore: {
-//       storeInstallation: async (installation) => {
-//         if (installation.isEnterpriseInstall && installation.enterprise !== undefined) { 
-//             process.env[installation.enterprise.id] =  JSON.stringify(installation)
-//             return
-//         }
-//         if (installation.team !== undefined) { 
-//             process.env[installation.team.id] =  JSON.stringify(installation)
-//             return
-//         }
-//         throw new Error('Failed saving installation data to installationStore');
-//       },
-//       fetchInstallation: async (installQuery) => {
-//         if (installQuery.isEnterpriseInstall && installQuery.enterpriseId !== undefined) return process.env[installQuery.enterpriseId];
-//         console.log((process.env[installQuery.teamId]))
-//         if (installQuery.teamId !== undefined) return process.env[installQuery.teamId];
-//         throw new Error('Failed fetching installation');
-//       },
-//       deleteInstallation: async (installQuery) => {
-//         if (installQuery.isEnterpriseInstall && installQuery.enterpriseId !== undefined) process.env[installQuery.enterpriseId] = null
-//         if (installQuery.teamId !== undefined) process.env[installQuery.teamId] = null
-//         throw new Error('Failed to delete installation');
-//       }
-//   },
-//   installerOptions: {
-//       redirectUriPath: '/slack/redirect',
-//   }
-// });
+const app = new App({
+  signingSecret: process.env.SLACK_SIGNING_SECRET,
+  clientId: process.env.SLACK_CLIENT_ID,
+  clientSecret: process.env.SLACK_CLIENT_SECRET,
+  stateSecret: 'remind-me-secret',
+  scopes: ['chat:write','commands'],
+  port: PORT,
+  customRoutes: [
+    {
+      path: '/',
+      method: ['GET'],
+      handler: (_, res) => {
+        res.writeHead(200);
+        res.end('Homepage');
+      },
+    },
+  ],
+  installationStore: {
+      storeInstallation: async (installation) => {
+        if (installation.isEnterpriseInstall && installation.enterprise !== undefined) { 
+            process.env[installation.enterprise.id] =  JSON.stringify(installation)
+            return
+        }
+        if (installation.team !== undefined) { 
+            process.env[installation.team.id] =  JSON.stringify(installation)
+            return
+        }
+        throw new Error('Failed saving installation data to installationStore');
+      },
+      fetchInstallation: async (installQuery) => {
+        if (installQuery.isEnterpriseInstall && installQuery.enterpriseId !== undefined) return process.env[installQuery.enterpriseId];
+        console.log((process.env[installQuery.teamId]))
+        if (installQuery.teamId !== undefined) return process.env[installQuery.teamId];
+        throw new Error('Failed fetching installation');
+      },
+      deleteInstallation: async (installQuery) => {
+        if (installQuery.isEnterpriseInstall && installQuery.enterpriseId !== undefined) process.env[installQuery.enterpriseId] = null
+        if (installQuery.teamId !== undefined) process.env[installQuery.teamId] = null
+        throw new Error('Failed to delete installation');
+      }
+  },
+  installerOptions: {
+      redirectUriPath: '/slack/redirect',
+  }
+});
 
 /**
  * Schedule message to send to certain channel or user from start to end dates
@@ -81,7 +81,7 @@ app.command('/reminders', async ({ payload, body, say, respond, ack }) => {
     const messageIds = await scheduleMessages(sanitizedId, message, dates);
     const referenceId = uuid();
     const TTL = ((new Date(end) + 1) - new Date()) / 1000;
-    scheduleMessages.set(referenceId, messageIds, TTL); 
+    scheduledMessages.set(referenceId, messageIds, TTL); 
 
     // Respond with reference id
     await respond(`Niiiiiiiiiiice, successfully scheduled your message. This is your reference ID: ${referenceId}. You'll need it if you ever want to edit or cancel your scheduled messages.`);
