@@ -103,7 +103,7 @@ app.command("/schedule", async ({ ack, body, context, logger }) => {
 	try {
 		const result = await app.client.views.open({
 			token: context.botToken,
-			trigger_id: body,
+			trigger_id: body.trigger_id,
 			view: {
 				type: "modal",
 				callback_id: "schedule",
