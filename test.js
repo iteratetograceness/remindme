@@ -1,3 +1,3 @@
 const { DateTime } = require("luxon");
 
-console.log(DateTime.now().toLocaleString());
+console.log(DateTime.now().toFormat("yyyy/LL/dd"));

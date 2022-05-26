@@ -181,7 +181,7 @@ app.command("/schedule", async ({ ack, body, context, logger }) => {
 						type: "input",
 						element: {
 							type: "datepicker",
-							initial_date: DateTime.now().toLocaleString(),
+							initial_date: DateTime.now().toFormat("yyyy/LL/dd"),
 							placeholder: {
 								type: "plain_text",
 								text: "Select a start date",
@@ -199,7 +199,7 @@ app.command("/schedule", async ({ ack, body, context, logger }) => {
 						type: "input",
 						element: {
 							type: "datepicker",
-							initial_date: DateTime.now().toLocaleString(),
+							initial_date: DateTime.now().toFormat("yyyy/LL/dd"),
 							placeholder: {
 								type: "plain_text",
 								text: "Select an end date",
