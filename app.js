@@ -86,7 +86,6 @@ app.command('/reminders', async ({ payload, context, respond, ack }) => {
 
     // Get user or channel id
     const sanitizedId = id.split('|')[0].match(/[a-zA-Z0-9]+/g).toString();
-    console.log(sanitizedId, message);
 
     // Get hours and minutes
     const splitTime = time.split(':')
@@ -104,19 +103,21 @@ app.command('/reminders', async ({ payload, context, respond, ack }) => {
     cache.set(referenceId, messageIds, TTL); 
 
     // Respond with reference id
-    await respond(`Niiiiiiiiiiice, successfully scheduled your message. This is your reference ID: ${referenceId}. You'll need it if you ever want to edit or cancel your scheduled messages.`);
+    await respond(`Niiiiiiiiiiice, successfully scheduled your message: ${message}. This is your reference ID: ${referenceId}. You'll need it if you ever want to cancel your scheduled messages.`);
 });
 
 /**
  * Cancel scheduled messages
  * Parameters: referenceId
  */
-// app.command('/cancel', async ({ command, ack, respond }) => {
-//     await ack();
-//     const messages = await listScheduledMessages();
-//     await deleteScheduledMessages(messages);
-//     await respond('Messages unscheduled.');
-// });
+app.command('/cancel', async ({ payload, ack, respond }) => {
+    await ack();
+    const { id } = payload;
+    const messages = await listScheduledMessages(id.trim());
+    console.log(messages)
+    // await deleteScheduledMessages(messages);
+    await respond('Messages unscheduled.');
+});
 
 /**
  * Generates array of UTC format dates from today to `lastDay`
