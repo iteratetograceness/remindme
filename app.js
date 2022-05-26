@@ -138,17 +138,17 @@ app.command('/cancel', async ({ payload, context, ack, respond }) => {
  */
 const generateDates = (start, end, hours, minutes) => {
     const dates = []
-    const date = new Date(start) - 1;
+    const date = new Date(start);
     let dateString = '';
     const endDate = new Date(end);
     endDate.setHours(hours, minutes, 0);
     const endDateString = endDate.toUTCString();
 
     while (dateString !== endDateString) {
-        date.setDate(date.getDate() + 1); 
         date.setHours(hours, minutes, 0); 
         dateString = date.toUTCString();
         dates.push(new Date(date).getTime() / 1000);
+        date.setDate(date.getDate() + 1); 
     }
     
     return dates;
