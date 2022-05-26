@@ -138,7 +138,7 @@ app.command('/cancel', async ({ payload, context, ack, respond }) => {
  */
 const generateDates = (start, end, hours, minutes) => {
     const dates = []
-    const date = new Date(start);
+    const date = new Date(start) - 1;
     let dateString = '';
     const endDate = new Date(end);
     endDate.setHours(hours, minutes, 0);
@@ -164,7 +164,6 @@ const scheduleMessages = async (id, message, dateArray, token) => {
                 post_at: date,
                 token
             });
-            console.log('scheduled messaged:', response, id, message, date);
             messageIds.push([response.scheduled_message_id, id])
         } catch (error) {
             console.error('> Ran into error scheduling message for', date, JSON.stringify(error));
