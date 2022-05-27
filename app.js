@@ -183,6 +183,57 @@ app.command("/schedule", async ({ ack, body, context, logger }) => {
 						},
 					},
 					{
+						type: "section",
+						block_id: "timezone",
+						text: {
+							type: "mrkdwn",
+							text: "Pick a timezone",
+						},
+						accessory: {
+							type: "static_select",
+							placeholder: {
+								type: "plain_text",
+								text: "Pick a timezone",
+								emoji: true,
+							},
+							options: [
+								{
+									text: {
+										type: "plain_text",
+										text: "US/Eastern",
+										emoji: true,
+									},
+									value: "America/New_York",
+								},
+								{
+									text: {
+										type: "plain_text",
+										text: "US/Central",
+										emoji: true,
+									},
+									value: "America/Chicago",
+								},
+								{
+									text: {
+										type: "plain_text",
+										text: "US/Mountain",
+										emoji: true,
+									},
+									value: "America/Denver",
+								},
+								{
+									text: {
+										type: "plain_text",
+										text: "US/Pacific",
+										emoji: true,
+									},
+									value: "America/Los_Angeles",
+								},
+							],
+							action_id: "static_select-action",
+						},
+					},
+					{
 						type: "input",
 						block_id: "start",
 						element: {
@@ -237,10 +288,12 @@ app.view("schedule", async ({ ack, body, view, client, logger }) => {
 	await ack();
 
 	const submission = view.state.values;
+	console.log(submission.timezone);
 	const message = submission["message"]["ml_input"]["value"];
 	const recipient =
 		submission["recipient"]["users_select-action"]["selected_user"];
 	const time = submission["time"]["timepicker-action"]["selected_time"];
+	// const timezone = submission["timezone"][][]
 	const start = submission["start"]["datepicker-action"]["selected_date"];
 	const end = submission["end"]["datepicker-action"]["selected_date"];
 
