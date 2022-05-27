@@ -226,7 +226,8 @@ app.command("/schedule", async ({ ack, body, context, logger }) => {
 
 app.view("schedule", async ({ ack, body, view, client, logger }) => {
 	await ack();
-	logger.inner(">> view obj: ", view);
+	logger.info(">> view obj: ", view);
+    
 });
 
 /**
