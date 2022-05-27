@@ -1,8 +1,9 @@
 {
-  "name": "dan-bot",
+  "name": "remindme",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
+  "type": "module",
   "scripts": {
     "dev": "nodemon app.js",
     "lint": "eslint . --fix",

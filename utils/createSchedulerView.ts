@@ -1,5 +1,5 @@
 import { View } from '@slack/bolt'
-import { DateTime } from 'luxon/src/datetime'
+import { DateTime } from 'luxon'
 
 const createSchedulerView = (): View => {
   return {

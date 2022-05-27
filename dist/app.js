@@ -1,10 +1,11 @@
-import { App, LogLevel } from '@slack/bolt';
+import pkg from '@slack/bolt';
+const { App, LogLevel } = pkg;
 import NodeCache from 'node-cache';
-import { createInstallationStore, generateDates } from './utils';
-import createSchedulerView from './utils/createSchedulerView';
+import { createInstallationStore, generateDates, createSchedulerView } from './utils/index.js';
+import env from 'dotenv';
 // import { v4 as uuid } from 'uuid'
 // eslint-disable-next-line @typescript-eslint/no-var-requires
-require('dotenv').config();
+env.config();
 const PORT = 5000;
 const cache = new NodeCache();
 const app = new App({
