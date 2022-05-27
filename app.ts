@@ -1,4 +1,5 @@
-import { App, LogLevel, onlyActions } from '@slack/bolt'
+import { App, LogLevel } from '@slack/bolt'
+import NodeCache from 'node-cache'
 import { createInstallationStore, generateDates } from './utils'
 import createSchedulerView from './utils/createSchedulerView'
 // import { v4 as uuid } from 'uuid'
@@ -7,6 +8,7 @@ import createSchedulerView from './utils/createSchedulerView'
 require('dotenv').config()
 
 const PORT = 5000
+const cache = new NodeCache()
 
 const app = new App({
   signingSecret: process.env.SLACK_SIGNING_SECRET,
@@ -17,7 +19,7 @@ const app = new App({
   port: PORT,
   logLevel: LogLevel.DEBUG,
   // customRoutes: generateCustomRoutes(),
-  installationStore: createInstallationStore(),
+  installationStore: createInstallationStore(cache),
   installerOptions: {
     redirectUriPath: '/slack/redirect',
   },

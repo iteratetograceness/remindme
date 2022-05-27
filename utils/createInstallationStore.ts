@@ -1,9 +1,7 @@
 import { Installation, InstallationQuery, InstallationStore } from '@slack/bolt'
 import NodeCache from 'node-cache'
 
-const cache = new NodeCache()
-
-const createInstallationStore: () => InstallationStore = (): InstallationStore => {
+const createInstallationStore = (cache: NodeCache): InstallationStore => {
   return {
     storeInstallation: async (installation: Installation) => {
       if (installation.isEnterpriseInstall && installation.enterprise !== undefined) {
