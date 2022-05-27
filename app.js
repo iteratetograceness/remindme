@@ -127,6 +127,7 @@ app.command("/schedule", async ({ ack, body, context, logger }) => {
 				blocks: [
 					{
 						type: "input",
+						block_id: "message",
 						element: {
 							type: "plain_text_input",
 							action_id: "ml_input",
@@ -147,6 +148,7 @@ app.command("/schedule", async ({ ack, body, context, logger }) => {
 					},
 					{
 						type: "section",
+						block_id: "recipient",
 						text: {
 							type: "mrkdwn",
 							text: "Select a recipient:",
@@ -163,6 +165,7 @@ app.command("/schedule", async ({ ack, body, context, logger }) => {
 					},
 					{
 						type: "input",
+						block_id: "message",
 						element: {
 							type: "timepicker",
 							initial_time: "13:37",
@@ -181,6 +184,7 @@ app.command("/schedule", async ({ ack, body, context, logger }) => {
 					},
 					{
 						type: "input",
+						block_id: "start",
 						element: {
 							type: "datepicker",
 							initial_date: DateTime.now().toFormat("yyyy-LL-dd"),
@@ -199,6 +203,7 @@ app.command("/schedule", async ({ ack, body, context, logger }) => {
 					},
 					{
 						type: "input",
+						block_id: "end",
 						element: {
 							type: "datepicker",
 							initial_date: DateTime.now().toFormat("yyyy-LL-dd"),
@@ -230,7 +235,23 @@ app.action("users_select-action", async ({ ack, body, logger, client }) => {
 
 app.view("schedule", async ({ ack, body, view, client, logger }) => {
 	await ack();
-	logger.info(">> view obj: ", view.state.values);
+
+	const { message, recipient, time, start, end } = view.state.values;
+	const user = body["user"]["id"];
+
+	logger.info(">> response: ", message, recipient, time, start, end);
+	// generate dates
+	// schedule messages
+	// if successful, send "messages scheduled!"
+	// else send "sorry i'm struggling, try again later."
+	try {
+		await client.chat.postMessage({
+			channel: user,
+			text: "ok gud.",
+		});
+	} catch (error) {
+		logger.error(error);
+	}
 });
 
 /**
