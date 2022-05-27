@@ -7,7 +7,8 @@
   "scripts": {
     "dev": "nodemon app.js",
     "lint": "eslint . --fix",
-    "postinstall": "tsc"
+    "build": "tsc --build tsconfig.json",
+    "start": "node dist/main.js"
   },
   "repository": {
     "type": "git",
