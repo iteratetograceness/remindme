@@ -7,23 +7,18 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-const scheduleMessages = (id, message, dateArray, token, client) => __awaiter(void 0, void 0, void 0, function* () {
-    const messageIds = [];
-    for (const date of dateArray) {
+const deleteScheduledMessages = (messageArray, token, client) => __awaiter(void 0, void 0, void 0, function* () {
+    for (const message of messageArray) {
         try {
-            const response = yield client.chat.scheduleMessage({
-                channel: id,
-                text: message,
-                post_at: date,
+            yield client.chat.deleteScheduledMessage({
+                channel: message[1],
+                scheduled_message_id: message[0],
                 token,
             });
-            if (response.scheduled_message_id)
-                messageIds.push([response.scheduled_message_id, id]);
         }
         catch (error) {
-            console.error('> Ran into error scheduling message for', date, JSON.stringify(error));
+            console.log('> Ran into error while canceling message ID', message[0], error);
         }
     }
-    return messageIds;
 });
-export default scheduleMessages;
+export default deleteScheduledMessages;
