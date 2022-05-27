@@ -17,7 +17,7 @@ const generateDates = (start: string, end: string, time: string, timezone: strin
 
   let cursor = startUNIX
   while (cursor.ts <= endUNIX.ts) {
-    dates.push(cursor.ts)
+    dates.push(cursor.toUnixInteger())
     cursor = cursor.plus({ days: 1 }) as IDateTIme
   }
 

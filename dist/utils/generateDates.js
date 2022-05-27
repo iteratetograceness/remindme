@@ -7,11 +7,12 @@ const generateDates = (start, end, time, timezone) => {
     const endUNIX = DateTime.fromISO(endISO, { zone: timezone });
     let cursor = startUNIX;
     while (cursor.ts <= endUNIX.ts) {
-        dates.push(cursor.ts);
+        console.log(cursor);
+        dates.push(cursor.toUnixInteger());
+        // toSeconds.push(cursor.toUnixInteger())
         cursor = cursor.plus({ days: 1 });
     }
     return dates;
 };
+console.log(generateDates('2022-05-27', '2022-05-29', '18:50', 'America/New_York'));
 export default generateDates;
-// 17:43 America/New_York 2022-05-27 2022-05-28
-console.log(generateDates('2022-05-27', '2022-05-29', '18:43', 'America/Los_Angeles'));
