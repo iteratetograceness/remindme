@@ -236,7 +236,14 @@ app.action("users_select-action", async ({ ack, body, logger, client }) => {
 app.view("schedule", async ({ ack, body, view, client, logger }) => {
 	await ack();
 
-	const { message, recipient, time, start, end } = view.state.values;
+	const submission = view.state.values;
+	const message = submission["message"]["ml_input"]["value"];
+	const recipient =
+		submission["recipient"]["users_select-action"]["selected_user"];
+	const time = submission["time"]["timepicker-action"]["selected_time"];
+	const start = submission["start"]["datepicker"]["selected_date"];
+	const end = submission["end"]["datepicker"]["selected_date"];
+
 	const user = body["user"]["id"];
 
 	logger.info(">> response: ", message, recipient, time, start, end);
