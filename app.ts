@@ -64,7 +64,6 @@ app.view('schedule', async ({ ack, body, view, context, client, logger }) => {
 
   if (!message) {
     await client.chat.postMessage({ channel: user, text: 'Message cannot be empty.' })
-    // TODO: reopen modal with error message
     return
   }
 
@@ -72,7 +71,6 @@ app.view('schedule', async ({ ack, body, view, context, client, logger }) => {
 
   if (!recipient) {
     await client.chat.postMessage({ channel: user, text: 'You must select a user.' })
-    // TODO: reopen modal with error message
     return
   }
 
@@ -85,7 +83,6 @@ app.view('schedule', async ({ ack, body, view, context, client, logger }) => {
 
   if (!start || !end || !time) {
     await client.chat.postMessage({ channel: user, text: 'Dates and time must not be empty.' })
-    // TODO: reopen modal with error message
     return
   }
 

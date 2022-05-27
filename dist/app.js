@@ -10,7 +10,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 import pkg from '@slack/bolt';
 const { App, LogLevel } = pkg;
 import NodeCache from 'node-cache';
-import { createInstallationStore, generateDates, createSchedulerView, deleteScheduledMessages } from './utils/index.js';
+import { createInstallationStore, generateDates, createSchedulerView, deleteScheduledMessages, createSchedulerResponse, } from './utils/index.js';
 import env from 'dotenv';
 import scheduleMessages from './utils/scheduleMessages.js';
 import { v4 as uuid } from 'uuid';
@@ -54,34 +54,41 @@ app.view('schedule', ({ ack, body, view, context, client, logger }) => __awaiter
     yield ack();
     const submission = view.state.values;
     const message = submission.message.ml_input.value;
+    const user = body['user']['id'];
+    if (!message) {
+        yield client.chat.postMessage({ channel: user, text: 'Message cannot be empty.' });
+        return;
+    }
     const recipient = submission.recipient['users_select-action']['selected_user'];
+    if (!recipient) {
+        yield client.chat.postMessage({ channel: user, text: 'You must select a user.' });
+        return;
+    }
     const time = submission.time['timepicker-action']['selected_time'];
     const timezone = submission.timezone['static_select-action']['selected_option']
         ? submission.timezone['static_select-action']['selected_option']['value']
         : 'America/New_York';
     const start = submission['start']['datepicker-action']['selected_date'];
     const end = submission['end']['datepicker-action']['selected_date'];
-    const user = body['user']['id'];
-    let dates = [];
-    let messageIds = [];
-    logger.info('>> response: ', message, recipient, time, timezone, start, end);
-    if (start && end && time)
-        dates = generateDates(start, end, time, timezone);
-    if (recipient && message && dates && context.botToken) {
-        messageIds = yield scheduleMessages(recipient, message, dates, context.botToken, client);
+    if (!start || !end || !time) {
+        yield client.chat.postMessage({ channel: user, text: 'Dates and time must not be empty.' });
+        return;
     }
-    let msg = '';
+    const dates = generateDates(start, end, time, timezone);
+    let messageIds = [];
+    if (context.botToken)
+        messageIds = yield scheduleMessages(recipient, message, dates, context.botToken, client);
     if (messageIds.length > 0) {
         const ID = uuid();
         cache.set(ID, messageIds);
-        msg = `Messages scheduled. Keep this ID in case you regret sending '${message}': ${ID}.`;
+        const successResponse = createSchedulerResponse(user, message, start, end, time, timezone, recipient);
+        yield client.chat.postMessage(successResponse);
+        return;
     }
-    else
-        msg = 'Something went wrong. Try again later.';
     try {
         yield client.chat.postMessage({
             channel: user,
-            text: msg,
+            text: 'Something went wrong. Try again later.',
         });
     }
     catch (error) {
