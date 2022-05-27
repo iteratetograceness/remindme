@@ -83,13 +83,13 @@ app.view('schedule', async ({ ack, body, view, client, logger }) => {
  * Cancel scheduled messages
  * Parameters: referenceId
  */
-// app.command('/cancel', async ({ payload, context, ack, respond }) => {
-//   await ack()
-//   const { text } = payload
-//   const messageIds = cache.get(text.trim())
-//   await deleteScheduledMessages(messageIds, context.botToken)
-//   await respond('Messages unscheduled.')
-// })
+app.command('/cancel', async ({ payload, context, ack, respond }) => {
+  await ack()
+  const { text } = payload
+  const messageIds: string[][] = cache.get(text.trim()) || [[]]
+  await deleteScheduledMessages(messageIds, context.botToken || '')
+  await respond('Messages unscheduled.')
+})
 
 // const scheduleMessages = async (id, message, dateArray, token) => {
 //   const messageIds = []
@@ -110,19 +110,20 @@ app.view('schedule', async ({ ack, body, view, client, logger }) => {
 //   return messageIds
 // }
 
-// const deleteScheduledMessages = async (messageArray, token) => {
-//   for (let message of messageArray) {
-//     try {
-//       await app.client.chat.deleteScheduledMessage({
-//         channel: message[1],
-//         scheduled_message_id: message[0],
-//         token,
-//       })
-//     } catch (error) {
-//       console.log('> Ran into error while canceling message ID', message.id, error)
-//     }
-//   }
-// }
+const deleteScheduledMessages = async (messageArray: string[][], token: string) => {
+  for (const message of messageArray) {
+    try {
+      await app.client.chat.deleteScheduledMessage({
+        channel: message[1],
+        scheduled_message_id: message[0],
+        token,
+      })
+    } catch (error) {
+      console.log('> Ran into error while canceling message ID', message[0], error)
+    }
+  }
+}
+
 ;(async () => {
   await app.start(process.env.PORT || 3000)
   console.log('⚡️ Bolt app is running!')

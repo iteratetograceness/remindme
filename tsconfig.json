@@ -2,6 +2,8 @@
   "extends": "@tsconfig/node16/tsconfig.json",
   "compilerOptions": {
     "outDir": "dist",
+    "lib": ["ESNext"],
+    "target": "ES6",
     "module": "ESNext",
     "moduleResolution": "node"
   },
