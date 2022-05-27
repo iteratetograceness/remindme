@@ -228,121 +228,121 @@ app.action("users_select-action", async ({ ack, body, logger, client }) => {
 	await ack();
 
 	try {
-		const response = client.views.update({
-			view_id: body.view.id,
-			hash: body.view.hash,
-			view: {
-				type: "modal",
-				callback_id: "schedule",
-				title: {
-					type: "plain_text",
-					text: "Remind Me",
-					emoji: true,
-				},
-				submit: {
-					type: "plain_text",
-					text: "Submit",
-					emoji: true,
-				},
-				close: {
-					type: "plain_text",
-					text: "Cancel",
-					emoji: true,
-				},
-				blocks: [
-					{
-						type: "input",
-						element: {
-							type: "plain_text_input",
-							action_id: "ml_input",
-							multiline: true,
-							placeholder: {
-								type: "plain_text",
-								text: "What are you trying to send?",
-							},
-						},
-						label: {
-							type: "plain_text",
-							text: "Message",
-						},
-						hint: {
-							type: "plain_text",
-							text: "You should probably keep it short. Don't be a paragraph person.",
-						},
-					},
-					{
-						type: "section",
-						text: {
-							type: "mrkdwn",
-							text: "Select a recipient:",
-						},
-						accessory: {
-							type: "users_select",
-							placeholder: {
-								type: "plain_text",
-								text: "Select a user",
-								emoji: true,
-							},
-							action_id: "users_select-action",
-						},
-					},
-					{
-						type: "input",
-						element: {
-							type: "timepicker",
-							initial_time: "13:37",
-							placeholder: {
-								type: "plain_text",
-								text: "Select time",
-								emoji: true,
-							},
-							action_id: "timepicker-action",
-						},
-						label: {
-							type: "plain_text",
-							text: "Time",
-							emoji: true,
-						},
-					},
-					{
-						type: "input",
-						element: {
-							type: "datepicker",
-							initial_date: DateTime.now().toFormat("yyyy-LL-dd"),
-							placeholder: {
-								type: "plain_text",
-								text: "Select a start date",
-								emoji: true,
-							},
-							action_id: "datepicker-action",
-						},
-						label: {
-							type: "plain_text",
-							text: "Start Date",
-							emoji: true,
-						},
-					},
-					{
-						type: "input",
-						element: {
-							type: "datepicker",
-							initial_date: DateTime.now().toFormat("yyyy-LL-dd"),
-							placeholder: {
-								type: "plain_text",
-								text: "Select an end date",
-								emoji: true,
-							},
-							action_id: "datepicker-action",
-						},
-						label: {
-							type: "plain_text",
-							text: "End Date",
-							emoji: true,
-						},
-					},
-				],
-			},
-		});
+		// const response = client.views.update({
+		// 	view_id: body.view.id,
+		// 	hash: body.view.hash,
+		// 	view: {
+		// 		type: "modal",
+		// 		callback_id: "schedule",
+		// 		title: {
+		// 			type: "plain_text",
+		// 			text: "Remind Me",
+		// 			emoji: true,
+		// 		},
+		// 		submit: {
+		// 			type: "plain_text",
+		// 			text: "Submit",
+		// 			emoji: true,
+		// 		},
+		// 		close: {
+		// 			type: "plain_text",
+		// 			text: "Cancel",
+		// 			emoji: true,
+		// 		},
+		// 		blocks: [
+		// 			{
+		// 				type: "input",
+		// 				element: {
+		// 					type: "plain_text_input",
+		// 					action_id: "ml_input",
+		// 					multiline: true,
+		// 					placeholder: {
+		// 						type: "plain_text",
+		// 						text: "What are you trying to send?",
+		// 					},
+		// 				},
+		// 				label: {
+		// 					type: "plain_text",
+		// 					text: "Message",
+		// 				},
+		// 				hint: {
+		// 					type: "plain_text",
+		// 					text: "You should probably keep it short. Don't be a paragraph person.",
+		// 				},
+		// 			},
+		// 			{
+		// 				type: "section",
+		// 				text: {
+		// 					type: "mrkdwn",
+		// 					text: "Select a recipient:",
+		// 				},
+		// 				accessory: {
+		// 					type: "users_select",
+		// 					placeholder: {
+		// 						type: "plain_text",
+		// 						text: "Select a user",
+		// 						emoji: true,
+		// 					},
+		// 					action_id: "users_select-action",
+		// 				},
+		// 			},
+		// 			{
+		// 				type: "input",
+		// 				element: {
+		// 					type: "timepicker",
+		// 					initial_time: "13:37",
+		// 					placeholder: {
+		// 						type: "plain_text",
+		// 						text: "Select time",
+		// 						emoji: true,
+		// 					},
+		// 					action_id: "timepicker-action",
+		// 				},
+		// 				label: {
+		// 					type: "plain_text",
+		// 					text: "Time",
+		// 					emoji: true,
+		// 				},
+		// 			},
+		// 			{
+		// 				type: "input",
+		// 				element: {
+		// 					type: "datepicker",
+		// 					initial_date: DateTime.now().toFormat("yyyy-LL-dd"),
+		// 					placeholder: {
+		// 						type: "plain_text",
+		// 						text: "Select a start date",
+		// 						emoji: true,
+		// 					},
+		// 					action_id: "datepicker-action",
+		// 				},
+		// 				label: {
+		// 					type: "plain_text",
+		// 					text: "Start Date",
+		// 					emoji: true,
+		// 				},
+		// 			},
+		// 			{
+		// 				type: "input",
+		// 				element: {
+		// 					type: "datepicker",
+		// 					initial_date: DateTime.now().toFormat("yyyy-LL-dd"),
+		// 					placeholder: {
+		// 						type: "plain_text",
+		// 						text: "Select an end date",
+		// 						emoji: true,
+		// 					},
+		// 					action_id: "datepicker-action",
+		// 				},
+		// 				label: {
+		// 					type: "plain_text",
+		// 					text: "End Date",
+		// 					emoji: true,
+		// 				},
+		// 			},
+		// 		],
+		// 	},
+		// });
 	} catch (error) {
 		logger.error(error);
 	}
