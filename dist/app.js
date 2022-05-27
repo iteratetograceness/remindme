@@ -48,6 +48,7 @@ app.command('/schedule', ({ ack, body, context, logger, client }) => __awaiter(v
     }
 }));
 app.action('users_select-action', ({ ack }) => __awaiter(void 0, void 0, void 0, function* () { return yield ack(); }));
+app.action('static_select-action', ({ ack }) => __awaiter(void 0, void 0, void 0, function* () { return yield ack(); }));
 app.view('schedule', ({ ack, body, view, client, logger }) => __awaiter(void 0, void 0, void 0, function* () {
     yield ack();
     const submission = view.state.values;

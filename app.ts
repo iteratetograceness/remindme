@@ -66,7 +66,7 @@ app.view('schedule', async ({ ack, body, view, client, logger }) => {
   logger.info('>> response: ', message, recipient, time, timezone, start, end)
 
   if (start && end && time) generateDates(start, end, time, timezone)
-
+	
   // schedule messages
   // if successful, send "messages scheduled!"
   // else send "sorry i'm struggling, try again later."
