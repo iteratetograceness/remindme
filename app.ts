@@ -66,8 +66,6 @@ app.view('schedule', async ({ ack, body, view, context, client, logger }) => {
   let dates: number[] = []
   let messageIds: string[][] = []
 
-  logger.info('>> response: ', message, recipient, time, timezone, start, end)
-
   if (start && end && time) dates = generateDates(start, end, time, timezone)
 
   if (recipient && message && dates && context.botToken) {
