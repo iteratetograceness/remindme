@@ -220,47 +220,6 @@ app.command("/schedule", async ({ ack, body, context, logger }) => {
 	} catch (error) {
 		logger.error(error);
 	}
-
-	// const { text } = payload;
-	// const splitArr = text.split(" ");
-	// const id = splitArr[0];
-	// const start = splitArr[1];
-	// const end = splitArr[2];
-	// const time = splitArr[3];
-	// const message = splitArr.slice(4).join(" ");
-
-	// // Get user or channel id
-	// const sanitizedId = id
-	// 	.split("|")[0]
-	// 	.match(/[a-zA-Z0-9]+/g)
-	// 	.toString();
-
-	// // Get hours and minutes
-	// const splitTime = time.split(":");
-	// const amOrPm = splitTime[splitTime.length - 1]
-	// 	.match(/[a-zA-Z]+/g)[0]
-	// 	.toLowerCase();
-	// const hours =
-	// 	(splitTime.length === 2
-	// 		? Number(splitTime[0])
-	// 		: Number(splitTime[0].match(/\d+/g))) + (amOrPm === "pm" ? 12 : 0);
-	// const mins = splitTime.length === 2 ? Number(splitTime[1].match(/\d+/g)) : 0;
-
-	// // Generate dates
-	// const dates = generateDates(start, end, hours, mins);
-
-	// console.log(dates);
-
-	// // Schedule messages and save reference in cache
-	// const messageIds = await scheduleMessages(
-	// 	sanitizedId,
-	// 	message,
-	// 	dates,
-	// 	context.botToken
-	// );
-	// const referenceId = uuid();
-	// const TTL = (new Date(end) + 1 - new Date()) / 1000;
-	// cache.set(referenceId, messageIds, TTL);
 });
 
 app.view("schedule", async ({ ack, body, view, client, logger }) => {
