@@ -3,7 +3,8 @@ const { App, LogLevel } = pkg
 import NodeCache from 'node-cache'
 import { createInstallationStore, generateDates, createSchedulerView } from './utils/index.js'
 import env from 'dotenv'
-// import { v4 as uuid } from 'uuid'
+import scheduleMessages from './utils/scheduleMessages.js'
+import { v4 as uuid } from 'uuid'
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 env.config()
@@ -48,7 +49,7 @@ app.action('users_select-action', async ({ ack }) => await ack())
 
 app.action('static_select-action', async ({ ack }) => await ack())
 
-app.view('schedule', async ({ ack, body, view, client, logger }) => {
+app.view('schedule', async ({ ack, body, view, context, client, logger }) => {
   await ack()
 
   const submission = view.state.values
@@ -62,19 +63,29 @@ app.view('schedule', async ({ ack, body, view, client, logger }) => {
   const end = submission['end']['datepicker-action']['selected_date']
 
   const user = body['user']['id']
+  let dates: number[] = []
+  let messageIds: string[][] = []
 
   logger.info('>> response: ', message, recipient, time, timezone, start, end)
 
-  if (start && end && time) generateDates(start, end, time, timezone)
-	
-  // schedule messages
-  // if successful, send "messages scheduled!"
-  // else send "sorry i'm struggling, try again later."
+  if (start && end && time) dates = generateDates(start, end, time, timezone)
+
+  if (recipient && message && dates && context.botToken) {
+    messageIds = await scheduleMessages(recipient, message, dates, context.botToken, client)
+  }
+
+  let msg = ''
+
+  if (messageIds.length > 0) {
+    const ID = uuid()
+    cache.set(ID, messageIds)
+    msg = `Messages scheduled. Keep this ID in case you regret sending '${message}': ${ID}.`
+  } else msg = 'Something went wrong. Try again later.'
 
   try {
     await client.chat.postMessage({
       channel: user,
-      text: 'ok gud.',
+      text: msg,
     })
   } catch (error) {
     logger.error(error)
@@ -92,25 +103,6 @@ app.command('/cancel', async ({ payload, context, ack, respond }) => {
   await deleteScheduledMessages(messageIds, context.botToken || '')
   await respond('Messages unscheduled.')
 })
-
-// const scheduleMessages = async (id, message, dateArray, token) => {
-//   const messageIds = []
-//   for (let date of dateArray) {
-//     try {
-//       const response = await app.client.chat.scheduleMessage({
-//         channel: id,
-//         text: message,
-//         post_at: date,
-//         token,
-//       })
-//       console.log('> Scheduled messaged: ', date, response)
-//       messageIds.push([response.scheduled_message_id, id])
-//     } catch (error) {
-//       console.error('> Ran into error scheduling message for', date, JSON.stringify(error))
-//     }
-//   }
-//   return messageIds
-// }
 
 const deleteScheduledMessages = async (messageArray: string[][], token: string) => {
   for (const message of messageArray) {
