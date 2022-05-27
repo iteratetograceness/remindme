@@ -100,6 +100,8 @@ const app = new App({
 app.command("/schedule", async ({ ack, body, context, logger }) => {
 	await ack();
 
+	console.log(DateTime.now().toFormat("yyyy/LL/dd"));
+
 	try {
 		const result = await app.client.views.open({
 			token: context.botToken,
