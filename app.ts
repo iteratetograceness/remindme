@@ -1,7 +1,7 @@
 import pkg from '@slack/bolt'
 const { App, LogLevel } = pkg
 import NodeCache from 'node-cache'
-import { createInstallationStore, generateDates, createSchedulerView } from './utils/index.js'
+import { createInstallationStore, generateDates, createSchedulerView, deleteScheduledMessages } from './utils/index.js'
 import env from 'dotenv'
 import scheduleMessages from './utils/scheduleMessages.js'
 import { v4 as uuid } from 'uuid'
@@ -94,30 +94,22 @@ app.view('schedule', async ({ ack, body, view, context, client, logger }) => {
 
 /**
  * Cancel scheduled messages
- * Parameters: referenceId
+ * Parameters: ID
  */
-app.command('/cancel', async ({ payload, context, ack, respond }) => {
+app.command('/cancel', async ({ payload, context, ack, respond, client }) => {
   await ack()
   const { text } = payload
-  const messageIds: string[][] = cache.get(text.trim()) || [[]]
-  await deleteScheduledMessages(messageIds, context.botToken || '')
+  const ID = text.trim()
+  const messageIds: string[][] = cache.get(ID) || []
+
+  if (!messageIds.length) {
+    await respond("Um, that ID doesn't exist.")
+    return
+  }
+
+  await deleteScheduledMessages(messageIds, context.botToken || '', client)
   await respond('Messages unscheduled.')
 })
-
-const deleteScheduledMessages = async (messageArray: string[][], token: string) => {
-  for (const message of messageArray) {
-    try {
-      await app.client.chat.deleteScheduledMessage({
-        channel: message[1],
-        scheduled_message_id: message[0],
-        token,
-      })
-    } catch (error) {
-      console.log('> Ran into error while canceling message ID', message[0], error)
-    }
-  }
-}
-
 ;(async () => {
   await app.start(process.env.PORT || 3000)
   console.log('⚡️ Bolt app is running!')
