@@ -1,6 +1,8 @@
 {
-	"extends": "@tsconfig/node16/tsconfig.json",
-	"compilerOptions": {},
-	"include": ["."],
-	"exclude": ["node_modules"]
+  "extends": "@tsconfig/node16/tsconfig.json",
+  "compilerOptions": {
+    "outDir": "dist"
+  },
+  "include": ["."],
+  "exclude": ["node_modules"]
 }

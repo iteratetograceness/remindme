@@ -1,3 +1,3 @@
-export * as generateDates from './generateDates'
-export * as createSchedulerView from './createSchedulerView'
-export * as createInstallationStore from './createInstallationStore'
+export { default as generateDates } from './generateDates'
+export { default as createSchedulerView } from './createSchedulerView'
+export { default as createInstallationStore } from './createInstallationStore'
