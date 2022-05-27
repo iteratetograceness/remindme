@@ -1,1 +1,2 @@
-web: node dist/index.js
+node: tsc
+web: node dist/app.js

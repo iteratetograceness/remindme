@@ -4,12 +4,14 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const bolt_1 = require("@slack/bolt");
+const node_cache_1 = __importDefault(require("node-cache"));
 const utils_1 = require("./utils");
 const createSchedulerView_1 = __importDefault(require("./utils/createSchedulerView"));
 // import { v4 as uuid } from 'uuid'
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 require('dotenv').config();
 const PORT = 5000;
+const cache = new node_cache_1.default();
 const app = new bolt_1.App({
     signingSecret: process.env.SLACK_SIGNING_SECRET,
     clientId: process.env.SLACK_CLIENT_ID,
@@ -19,7 +21,7 @@ const app = new bolt_1.App({
     port: PORT,
     logLevel: bolt_1.LogLevel.DEBUG,
     // customRoutes: generateCustomRoutes(),
-    installationStore: (0, utils_1.createInstallationStore)(),
+    installationStore: (0, utils_1.createInstallationStore)(cache),
     installerOptions: {
         redirectUriPath: '/slack/redirect',
     },
