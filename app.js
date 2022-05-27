@@ -241,8 +241,8 @@ app.view("schedule", async ({ ack, body, view, client, logger }) => {
 	const recipient =
 		submission["recipient"]["users_select-action"]["selected_user"];
 	const time = submission["time"]["timepicker-action"]["selected_time"];
-	const start = submission["start"]["datepicker"]["selected_date"];
-	const end = submission["end"]["datepicker"]["selected_date"];
+	const start = submission["start"]["datepicker-action"]["selected_date"];
+	const end = submission["end"]["datepicker-action"]["selected_date"];
 
 	const user = body["user"]["id"];
 
