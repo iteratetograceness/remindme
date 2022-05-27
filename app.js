@@ -165,7 +165,7 @@ app.command("/schedule", async ({ ack, body, context, logger }) => {
 					},
 					{
 						type: "input",
-						block_id: "message",
+						block_id: "time",
 						element: {
 							type: "timepicker",
 							initial_time: "13:37",
