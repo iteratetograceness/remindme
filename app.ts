@@ -46,6 +46,8 @@ app.command('/schedule', async ({ ack, body, context, logger, client }) => {
 
 app.action('users_select-action', async ({ ack }) => await ack())
 
+app.action('static_select-action', async ({ ack }) => await ack())
+
 app.view('schedule', async ({ ack, body, view, client, logger }) => {
   await ack()
 
