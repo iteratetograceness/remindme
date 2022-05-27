@@ -1,5 +1,3 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
 const createInstallationStore = (cache) => {
     return {
         storeInstallation: async (installation) => {
@@ -35,4 +33,4 @@ const createInstallationStore = (cache) => {
         },
     };
 };
-exports.default = createInstallationStore;
+export default createInstallationStore;

@@ -1,6 +1,4 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-const datetime_1 = require("luxon/src/datetime");
+import { DateTime } from 'luxon/src/datetime';
 const createSchedulerView = () => {
     return {
         type: 'modal',
@@ -134,7 +132,7 @@ const createSchedulerView = () => {
                 block_id: 'start',
                 element: {
                     type: 'datepicker',
-                    initial_date: datetime_1.DateTime.now().toFormat('yyyy-LL-dd'),
+                    initial_date: DateTime.now().toFormat('yyyy-LL-dd'),
                     placeholder: {
                         type: 'plain_text',
                         text: 'Select a start date',
@@ -153,7 +151,7 @@ const createSchedulerView = () => {
                 block_id: 'end',
                 element: {
                     type: 'datepicker',
-                    initial_date: datetime_1.DateTime.now().toFormat('yyyy-LL-dd'),
+                    initial_date: DateTime.now().toFormat('yyyy-LL-dd'),
                     placeholder: {
                         type: 'plain_text',
                         text: 'Select an end date',
@@ -170,4 +168,4 @@ const createSchedulerView = () => {
         ],
     };
 };
-exports.default = createSchedulerView;
+export default createSchedulerView;

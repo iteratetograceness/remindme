@@ -1,27 +1,22 @@
-"use strict";
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-const bolt_1 = require("@slack/bolt");
-const node_cache_1 = __importDefault(require("node-cache"));
-const utils_1 = require("./utils");
-const createSchedulerView_1 = __importDefault(require("./utils/createSchedulerView"));
+import { App, LogLevel } from '@slack/bolt';
+import NodeCache from 'node-cache';
+import { createInstallationStore, generateDates } from './utils';
+import createSchedulerView from './utils/createSchedulerView';
 // import { v4 as uuid } from 'uuid'
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 require('dotenv').config();
 const PORT = 5000;
-const cache = new node_cache_1.default();
-const app = new bolt_1.App({
+const cache = new NodeCache();
+const app = new App({
     signingSecret: process.env.SLACK_SIGNING_SECRET,
     clientId: process.env.SLACK_CLIENT_ID,
     clientSecret: process.env.SLACK_CLIENT_SECRET,
     stateSecret: 'remind-me-secret',
     scopes: ['chat:write', 'commands', 'chat:write.public'],
     port: PORT,
-    logLevel: bolt_1.LogLevel.DEBUG,
+    logLevel: LogLevel.DEBUG,
     // customRoutes: generateCustomRoutes(),
-    installationStore: (0, utils_1.createInstallationStore)(cache),
+    installationStore: createInstallationStore(cache),
     installerOptions: {
         redirectUriPath: '/slack/redirect',
     },
@@ -35,7 +30,7 @@ app.command('/schedule', async ({ ack, body, context, logger, client }) => {
         await client.views.open({
             token: context.botToken,
             trigger_id: body.trigger_id,
-            view: (0, createSchedulerView_1.default)(),
+            view: createSchedulerView(),
         });
     }
     catch (error) {
@@ -57,7 +52,7 @@ app.view('schedule', async ({ ack, body, view, client, logger }) => {
     const user = body['user']['id'];
     logger.info('>> response: ', message, recipient, time, timezone, start, end);
     if (start && end && time)
-        (0, utils_1.generateDates)(start, end, time, timezone);
+        generateDates(start, end, time, timezone);
     // schedule messages
     // if successful, send "messages scheduled!"
     // else send "sorry i'm struggling, try again later."
