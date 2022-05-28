@@ -68,6 +68,7 @@ app.view('schedule', async ({ ack, body, view, context, client, logger }) => {
   }
 
   const recipient = submission.recipient['users_select-action']['selected_user']
+  // TODO: is there a way to get the name from the user id?
 
   if (!recipient) {
     await client.chat.postMessage({ channel: user, text: 'You must select a user.' })

@@ -1,5 +1,7 @@
 import { v1 as uuid } from 'uuid'
 
+// TODO: timezone map America/New_York to 'ET' & time conversion AM/PM
+
 const createSchedulerView = (
   channel: string,
   message: string,
@@ -31,7 +33,7 @@ const createSchedulerView = (
         type: 'section',
         text: {
           type: 'mrkdwn',
-          text: `*:date: When:* ${start} - ${end} @ ${time} (${timezone})\n`,
+          text: `*:date: When:* *${start}* to *${end}* @ *${time}* (${timezone})\n`,
         },
       },
       {
